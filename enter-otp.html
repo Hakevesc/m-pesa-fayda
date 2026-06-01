@@ -92,6 +92,17 @@
       color: #239150;
       font-weight: 800;
     }
+
+    /* Error message replacement styling */
+    .error-msg {
+      font-size: 16px;
+      color: #e74c3c;
+      font-weight: 600;
+      margin-bottom: 44px;
+      margin-top: 4px;
+      min-height: 24px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -258,13 +269,26 @@
 
     function showOtpError(msg) {
       const el = document.getElementById('otpError');
+      const resendRow = document.querySelector('.resend-row');
       el.textContent = msg;
+      
       if (msg) {
         setBoxError();
+        el.style.display = 'block';
+        if (resendRow) resendRow.style.display = 'none';
+        
+        // Error clears after 5 seconds automatically
         setTimeout(() => {
-          if (el.textContent === msg) { el.textContent = ''; clearBoxError(); }
+          if (el.textContent === msg) {
+            el.textContent = '';
+            el.style.display = 'none';
+            if (resendRow) resendRow.style.display = 'flex';
+            clearBoxError();
+          }
         }, 5000);
       } else {
+        el.style.display = 'none';
+        if (resendRow) resendRow.style.display = 'flex';
         clearBoxError();
       }
     }
