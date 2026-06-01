@@ -510,9 +510,21 @@
   <div class="overlay" id="overlay" onclick="closeTestMenu()"></div>
   <div class="floating-test-menu" id="testMenu">
     <div class="menu-title">Test Validations</div>
+    <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; padding: 4px 18px; margin-top: 4px;">System Status</div>
     <button onclick="triggerValidation('limitReached')">Link Limit Reached</button>
     <button onclick="triggerValidation('inProgress')">Request In Progress</button>
     <button onclick="triggerValidation('alreadyLinked')">Already Linked</button>
+    
+    <div style="height: 1px; background: #f0f0f0; margin: 6px 0;"></div>
+    <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; padding: 4px 18px;">FAYDA Number Tests</div>
+    <button onclick="triggerFanInputTest('tooShort')">Too Short FAN (10 digits)</button>
+    <button onclick="triggerFanInputTest('invalidLength')">Invalid FCN (14 digits)</button>
+    
+    <div style="height: 1px; background: #f0f0f0; margin: 6px 0;"></div>
+    <div style="font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; padding: 4px 18px;">FAYDA OTP Tests</div>
+    <button onclick="triggerFanOtpTest('wrongOtp')">Wrong FAYDA OTP (123456)</button>
+    <button onclick="triggerFanOtpTest('expiredOtp')">Expired FAYDA OTP</button>
+    <button onclick="triggerFanOtpTest('invalidOtp')">Incomplete FAYDA OTP</button>
   </div>
 
   <footer class="footer">
@@ -538,30 +550,90 @@
   </div>
 
   <script>
-    /* ── Step 3: FAN input ── */
     function showFanError(msg) {
       const el = document.getElementById('fanError');
       const input = document.getElementById('fanInput');
       el.textContent = msg;
       input.classList.toggle('error', !!msg);
-      if (msg) setTimeout(() => { if (el.textContent === msg) showFanError(''); }, 5000);
+      // Removed the auto-hide timeout so the error stays visible until they type, which is standard for form validation
     }
 
     function handleFanInput(input) {
       const btn = document.getElementById('sendBtn');
-      const ok = input.value.trim().length >= 4;
-      btn.classList.toggle('active', ok);
-      btn.disabled = !ok;
+      const errorEl = document.getElementById('fanError');
+      
+      // Extract raw digits only
+      let digits = input.value.replace(/\D/g, '');
+      
+      // Limit to max 16 digits
+      if (digits.length > 16) {
+        digits = digits.slice(0, 16);
+      }
+      
+      // Format digits into blocks of 4
+      const matches = digits.match(/\d{1,4}/g);
+      const formatted = matches ? matches.join(' ') : '';
+      input.value = formatted;
+      
+      // Clear error and standard border states as they type
       showFanError('');
       input.classList.remove('error');
+      input.style.borderColor = '';
+      input.style.boxShadow = '';
+
+      // Enable the button if they have typed at least 1 digit, so they can click and get rich validation feedback
+      const hasInput = digits.length >= 1;
+      btn.classList.toggle('active', hasInput);
+      btn.disabled = !hasInput;
+      
+      // Dynamic live validation helper
+      if (digits.length === 12) {
+        errorEl.innerHTML = '<span style="color: #2FC56D; font-weight: 700;">✓ Valid 12-digit FAN (Alias Number)</span>';
+        input.style.borderColor = '#2FC56D';
+        input.style.boxShadow = '0 0 0 3px rgba(47,197,109,0.15)';
+      } else if (digits.length === 16) {
+        errorEl.innerHTML = '<span style="color: #2FC56D; font-weight: 700;">✓ Valid 16-digit FCN (Card Number)</span>';
+        input.style.borderColor = '#2FC56D';
+        input.style.boxShadow = '0 0 0 3px rgba(47,197,109,0.15)';
+      }
     }
 
     function goToOtp() {
-      const val = document.getElementById('fanInput').value.trim();
-      if (val.length < 4) return;
+      const input = document.getElementById('fanInput');
+      const val = input.value.trim();
+      const digits = val.replace(/\D/g, '');
+      
+      if (digits.length === 0) {
+        showFanError('Fayda number is required.');
+        input.classList.add('error');
+        input.focus();
+        return;
+      }
+      
+      if (digits.length < 12) {
+        showFanError(`Fayda Alias Number (FAN) must be exactly 12 digits. You entered ${digits.length} digit${digits.length === 1 ? '' : 's'}.`);
+        input.classList.add('error');
+        input.focus();
+        return;
+      }
+      
+      if (digits.length > 12 && digits.length < 16) {
+        showFanError(`Fayda Card Number (FCN) must be exactly 16 digits. You entered ${digits.length} digits.`);
+        input.classList.add('error');
+        input.focus();
+        return;
+      }
+      
+      if (digits.length > 16) {
+        showFanError('Fayda Number cannot exceed 16 digits.');
+        input.classList.add('error');
+        input.focus();
+        return;
+      }
 
+      // Valid: Proceed to OTP step
       document.getElementById('fanDisplay').textContent = val;
-      const last4 = val.slice(-4);
+      const last4 = digits.slice(-4);
       document.getElementById('maskedPhone').textContent = 'XXXXXX' + last4;
 
       document.getElementById('step-fan').style.display = 'none';
@@ -638,15 +710,33 @@
 
     function verifyOtp() {
       showFanOtpError('');
+      
       if (fanOtpExpired) {
-        showFanOtpError('OTP expired. Please request a new code.');
+        showFanOtpError('FAYDA OTP has expired. Please click Resend to get a new code.');
         clearOtp();
         return;
       }
+      
       const allFilled = lineBoxes.every(b => b.value.length === 1);
-      if (!allFilled) { showFanOtpError('Invalid OTP. Please try again.'); return; }
+      if (!allFilled) {
+        showFanOtpError('Please enter the complete 6-digit verification code.');
+        return;
+      }
+      
       const code = lineBoxes.map(b => b.value).join('');
-      if (!/^\d{6}$/.test(code)) { showFanOtpError('Invalid OTP. Please try again.'); return; }
+      if (!/^\d{6}$/.test(code)) {
+        showFanOtpError('Invalid code. Verification code must be 6 digits.');
+        return;
+      }
+      
+      // Simulate incorrect OTP for testing when they enter 000000 or 123456
+      if (code === '000000' || code === '123456') {
+        showFanOtpError('Incorrect verification code. Please check your SMS and try again.');
+        // Highlight the boxes in red
+        lineBoxes.forEach(b => b.classList.add('error'));
+        return;
+      }
+      
       window.location.href = 'consent.html';
     }
 
@@ -786,6 +876,75 @@
       document.getElementById('validationView').style.display = 'none';
       document.getElementById('logoCard').style.display = 'flex';
       document.getElementById('formCard').style.display = 'block';
+    }
+
+    function triggerFanOtpTest(type) {
+      closeTestMenu();
+      
+      // Ensure the UI is showing the form card and the OTP step
+      document.getElementById('step-fan').style.display = 'none';
+      document.getElementById('step-otp').style.display = 'block';
+      document.getElementById('logoCard').style.display = 'flex';
+      document.getElementById('formCard').style.display = 'block';
+      document.getElementById('validationView').style.display = 'none';
+      
+      const msgs = {
+        wrongOtp: 'Incorrect verification code. Please check your SMS and try again.',
+        invalidOtp: 'Please enter the complete 6-digit verification code.',
+        expiredOtp: 'FAYDA OTP has expired. Please click Resend to get a new code.'
+      };
+      
+      if (type === 'wrongOtp') {
+        const wrong = '123456';
+        lineBoxes.forEach((b, i) => {
+          b.value = wrong[i];
+          b.classList.add('filled');
+        });
+        checkOtpComplete();
+        showFanOtpError(msgs.wrongOtp);
+      } else if (type === 'invalidOtp') {
+        clearOtp();
+        lineBoxes[0].value = '1';
+        lineBoxes[0].classList.add('filled');
+        lineBoxes[1].value = '2';
+        lineBoxes[1].classList.add('filled');
+        checkOtpComplete();
+        showFanOtpError(msgs.invalidOtp);
+      } else if (type === 'expiredOtp') {
+        fanOtpExpired = true;
+        clearOtp();
+        checkOtpComplete();
+        showFanOtpError(msgs.expiredOtp);
+        
+        // Advance timer to 0 so UI shows it's expired
+        clearInterval(timerInterval);
+        timerSecs = 0;
+        document.getElementById('resendText').style.display = 'none';
+        document.getElementById('timerDisplay').style.display = 'none';
+      }
+    }
+
+    function triggerFanInputTest(type) {
+      closeTestMenu();
+      
+      // Ensure the UI is showing the form card and the FAN step
+      document.getElementById('step-fan').style.display = 'block';
+      document.getElementById('step-otp').style.display = 'none';
+      document.getElementById('logoCard').style.display = 'flex';
+      document.getElementById('formCard').style.display = 'block';
+      document.getElementById('validationView').style.display = 'none';
+      
+      const input = document.getElementById('fanInput');
+      
+      if (type === 'tooShort') {
+        input.value = '1029 3847 56'; // 10 digits
+        handleFanInput(input);
+        goToOtp(); // This will trigger the validation error!
+      } else if (type === 'invalidLength') {
+        input.value = '1029 3847 5610 29'; // 14 digits
+        handleFanInput(input);
+        goToOtp(); // This will trigger the validation error!
+      }
     }
   </script>
 

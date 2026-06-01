@@ -59,7 +59,7 @@
     .phone-input::placeholder { color: #ccc; letter-spacing: 2px; font-weight: 400; }
 
     .input-hint {
-      font-size: 12.5px;
+      font-size: 14px;
       color: #aaa;
       margin-bottom: 44px;
       padding-left: 2px;
@@ -80,9 +80,17 @@
       <!-- Mobile language switcher (desktop uses top-bar) -->
       <div class="mobile-lang-bar mobile-only" style="display:none;">
         <button class="mobile-lang-btn" id="mobileLangBtn" onclick="toggleLang(event)">
-          <span id="mobileLangBtnText">ENGLISH</span>
+          <span id="mobileLangBtnText">EN</span>
           <svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
         </button>
+        <div class="lang-dropdown" id="mobileLangDropdown" style="min-width: 100px;">
+          <button class="lang-option active" data-lang="en" onclick="selectLang('en')">
+            <span>EN</span><span class="check">✓</span>
+          </button>
+          <button class="lang-option" data-lang="am" onclick="selectLang('am')">
+            <span>AM</span><span class="check">✓</span>
+          </button>
+        </div>
       </div>
       <h1 class="left-title">Verify Your M-PESA<br>Account with FAYDA</h1>
 
@@ -164,7 +172,7 @@
 
       <!-- Mobile tagline (desktop version is in left panel) -->
       <div class="mobile-tagline">
-        <p>የፋይዳ መለያ ቁጥርዎን አካውንትዎ ጋር ያስተሳስሩ</p>
+        <p>የፋይዳ መለያ ቁጥርን እኩዎንትዮ ጋር ያስተሳስሩ</p>
         <p>Link your FAYDA ID with your account</p>
       </div>
 
@@ -217,14 +225,31 @@
 
     function handleInput(input) {
       const btn = document.getElementById('otpBtn');
-      const digits = input.value.replace(/\D/g, '');
+      let digits = input.value.replace(/\D/g, '');
+
+      /* Auto-strip leading 0 (e.g. 0911… → 911…) */
+      if (digits.startsWith('0')) {
+        digits = digits.substring(1);
+        input.value = digits;
+      }
+
       btn.classList.toggle('active', digits.length >= 9);
       btn.disabled = digits.length < 9;
       showError('');
     }
 
     function goNext() {
-      const val = document.getElementById('phoneInput').value.replace(/\D/g, '');
+      let val = document.getElementById('phoneInput').value.replace(/\D/g, '');
+
+      /* Auto-strip leading 0 just in case */
+      if (val.startsWith('0')) val = val.substring(1);
+
+      /* Must start with 7 */
+      if (!val.startsWith('7')) {
+        showError('Phone number must start with 7');
+        return;
+      }
+
       if (val.length >= 9) {
         sessionStorage.setItem('mpesa_phone', '+251' + val);
         window.location.href = 'enter-otp.html';
@@ -258,23 +283,52 @@
 
     function toggleLang(e) {
       e.stopPropagation();
-      document.getElementById('langBtn').classList.toggle('open');
-      document.getElementById('langDropdown').classList.toggle('open');
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const mobBtn = document.getElementById('mobileLangBtn');
+        const mobDd = document.getElementById('mobileLangDropdown');
+        if (mobBtn && mobDd) {
+          mobBtn.classList.toggle('open');
+          mobDd.classList.toggle('open');
+        }
+      } else {
+        const deskBtn = document.getElementById('langBtn');
+        const deskDd = document.getElementById('langDropdown');
+        if (deskBtn && deskDd) {
+          deskBtn.classList.toggle('open');
+          deskDd.classList.toggle('open');
+        }
+      }
     }
 
     function selectLang(lang) {
       document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-      document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+      document.querySelectorAll(`[data-lang="${lang}"]`).forEach(o => o.classList.add('active'));
+      
       const label = lang === 'en' ? 'ENGLISH' : 'አማርኛ';
+      const mobileLabel = lang === 'en' ? 'EN' : 'AM';
+      
       document.getElementById('langBtnText').textContent = label;
-      if (document.getElementById('mobileLangBtnText')) document.getElementById('mobileLangBtnText').textContent = label;
+      if (document.getElementById('mobileLangBtnText')) {
+        document.getElementById('mobileLangBtnText').textContent = mobileLabel;
+      }
+      
       document.getElementById('langBtn').classList.remove('open');
       document.getElementById('langDropdown').classList.remove('open');
+      
+      const mobBtn = document.getElementById('mobileLangBtn');
+      const mobDd = document.getElementById('mobileLangDropdown');
+      if (mobBtn) mobBtn.classList.remove('open');
+      if (mobDd) mobDd.classList.remove('open');
     }
 
     document.addEventListener('click', () => {
       document.getElementById('langBtn').classList.remove('open');
       document.getElementById('langDropdown').classList.remove('open');
+      const mobBtn = document.getElementById('mobileLangBtn');
+      const mobDd = document.getElementById('mobileLangDropdown');
+      if (mobBtn) mobBtn.classList.remove('open');
+      if (mobDd) mobDd.classList.remove('open');
     });
   </script>
 
