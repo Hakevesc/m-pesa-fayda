@@ -77,6 +77,13 @@
   <!-- LEFT GREEN PANEL -->
   <div class="left-panel">
     <div class="left-content">
+      <!-- Mobile language switcher (desktop uses top-bar) -->
+      <div class="mobile-lang-bar mobile-only" style="display:none;">
+        <button class="mobile-lang-btn" id="mobileLangBtn" onclick="toggleLang(event)">
+          <span id="mobileLangBtnText">ENGLISH</span>
+          <svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
+        </button>
+      </div>
       <h1 class="left-title">Verify Your M-PESA<br>Account with FAYDA</h1>
 
       <div class="logo-strip">
@@ -154,6 +161,12 @@
       </div>
 
       <p class="input-hint" id="phoneHint">Enter your 9-digit M-PESA registered phone number</p>
+
+      <!-- Mobile tagline (desktop version is in left panel) -->
+      <div class="mobile-tagline">
+        <p>የፋይዳ መለያ ቁጥርዎን አካውንትዎ ጋር ያስተሳስሩ</p>
+        <p>Link your FAYDA ID with your account</p>
+      </div>
 
       <button class="action-btn" id="otpBtn" disabled onclick="goNext()">
         <span>Get OTP Code</span>
@@ -252,7 +265,9 @@
     function selectLang(lang) {
       document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
       document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
-      document.getElementById('langBtnText').textContent = lang === 'en' ? 'ENGLISH' : 'አማርኛ';
+      const label = lang === 'en' ? 'ENGLISH' : 'አማርኛ';
+      document.getElementById('langBtnText').textContent = label;
+      if (document.getElementById('mobileLangBtnText')) document.getElementById('mobileLangBtnText').textContent = label;
       document.getElementById('langBtn').classList.remove('open');
       document.getElementById('langDropdown').classList.remove('open');
     }

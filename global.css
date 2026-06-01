@@ -441,78 +441,102 @@ body {
 ═══════════════════════════════ */
 
 /* Elements only visible on mobile */
-.mobile-only { display: none; }
+.mobile-only { display: none !important; }
 
-@media (max-width: 768px) {
-  .mobile-only { display: flex; }
+/* Tagline above button — always visible */
+.mobile-tagline {
+  display: block;
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+}
+.mobile-tagline p {
+  font-family: 'Barlow', sans-serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #888;
+  line-height: 1.65;
+}
+.mobile-tagline p:first-child { color: #aaa; }
 
-  /* ── Layout: stack vertically ── */
-  body {
-    flex-direction: column;
-    background: #239150;
-    min-height: 100vh;
-  }
+  @media (max-width: 768px) {
+    .mobile-only { display: flex !important; }
 
-  /* ── Left panel → top green header ── */
-  .left-panel {
-    width: 100%;
-    min-height: auto;
-    flex-shrink: 0;
-    padding-bottom: 0;
-  }
+    /* ── Layout: stack vertically ── */
+    body {
+      flex-direction: column;
+      background: #239150;
+      min-height: 100vh;
+    }
 
-  .left-panel::before {
-    height: 100%;
-  }
+    /* ── Left panel → top green header ── */
+    .left-panel {
+      width: 100%;
+      min-height: auto;
+      flex-shrink: 0;
+      padding-bottom: 0;
+    }
 
-  .left-content {
-    padding: 48px 24px 52px;
-    gap: 18px;
-  }
+    .left-panel::before {
+      height: 100%;
+    }
 
-  .left-title {
-    font-size: 21px;
-    letter-spacing: 0.2px;
-  }
+    .left-content {
+      padding: 40px 24px 60px;
+      gap: 14px;
+    }
 
-  /* Logo strip: white solid background on mobile */
-  .logo-strip {
-    background: #fff;
-    border-radius: 22px;
-    padding: 12px 24px;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-  }
+    .left-title {
+      font-size: 21px;
+      letter-spacing: 0.2px;
+    }
 
-  .logo-bubble {
-    width: 72px;
-    height: 72px;
-  }
-  .logo-bubble img {
-    width: 52px;
-    height: 52px;
-  }
-  .arrow-circle {
-    width: 44px;
-    height: 44px;
-  }
-  .arrow-circle svg { width: 22px; height: 22px; }
+    /* Logo strip: white card, centered, overlapping green/white boundary */
+    .logo-strip {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -28px;
+      z-index: 10;
+      background: #fff;
+      border-radius: 22px;
+      padding: 12px 24px;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
 
-  /* Hide tagline from green section on mobile — shown in white panel */
-  .left-tagline { display: none; }
+    .logo-bubble {
+      width: 72px;
+      height: 72px;
+    }
+    .logo-bubble img {
+      width: 52px;
+      height: 52px;
+    }
+    .arrow-circle {
+      width: 44px;
+      height: 44px;
+    }
+    .arrow-circle svg { width: 22px; height: 22px; }
 
-  /* ── Right panel → white card slides up over green ── */
-  .right-panel {
-    width: 100%;
-    min-height: auto;
-    flex: 1;
-    border-radius: 28px 28px 0 0;
-    margin-top: -28px;
-    position: relative;
-    z-index: 5;
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
-  }
+    /* Hide tagline from green section on mobile — shown in white panel */
+    .left-tagline { display: none; }
+
+    /* ── Right panel → white card sits below logo strip ── */
+    .right-panel {
+      width: 100%;
+      min-height: auto;
+      flex: 1;
+      border-radius: 28px 28px 0 0;
+      margin-top: 0;
+      position: relative;
+      z-index: 5;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    }
 
   /* Hide desktop top-bar on mobile (lang is in mobile-lang-bar) */
   .top-bar { display: none; }
@@ -542,12 +566,57 @@ body {
   }
   .mobile-lang-btn svg { width: 10px; height: 10px; fill: #fff; }
 
-  /* Form area: full width, no max-width constraint */
-  .form-area {
-    padding: 28px 24px 40px;
-    max-width: 100%;
-    justify-content: flex-start;
-  }
+    /* Form area: full width, centered, pushed up below logo */
+    .form-area {
+      padding: 48px 24px 40px;
+      max-width: 100%;
+      justify-content: flex-start;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Center steps on mobile */
+    .steps {
+      justify-content: center;
+    }
+
+    /* Center the instruction text */
+    .instruction {
+      text-align: center;
+    }
+
+    /* Make input-label centered */
+    .input-label {
+      text-align: center;
+    }
+
+    /* Center input hints */
+    .input-hint {
+      text-align: center;
+    }
+
+    /* Phone number input wrap - better fit on mobile */
+    .phone-wrap {
+      max-width: 100%;
+    }
+    .prefix {
+      padding: 14px 18px;
+      font-size: 22px;
+    }
+    .phone-input {
+      padding: 14px 18px;
+      font-size: 22px;
+    }
+
+    /* Center OTP boxes on mobile */
+    .otp-boxes {
+      justify-content: center;
+    }
+    .otp-box {
+      width: 60px;
+      height: 68px;
+      font-size: 26px;
+    }
 
   /* Slightly tighter steps on small screens */
   .step       { width: 30px; height: 30px; font-size: 12px; }
@@ -556,24 +625,6 @@ body {
   /* Instruction text */
   .instruction { font-size: 19px; }
 
-  /* Mobile tagline: shown above button in white panel */
-  .mobile-tagline {
-    display: block;
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 16px;
-    background: #f9fafb;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-  }
-  .mobile-tagline p {
-    font-family: 'Barlow', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: #888;
-    line-height: 1.65;
-  }
-  .mobile-tagline p:first-child { color: #aaa; }
 
   /* Floating test button — smaller on mobile */
   .floating-test-wrapper { bottom: 16px; right: 16px; gap: 8px; }
