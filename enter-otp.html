@@ -40,6 +40,13 @@
       background: #f0faf4;
     }
 
+    .otp-box.error {
+      border-color: #e74c3c !important;
+      background: #fef0ef;
+      color: #e74c3c;
+      box-shadow: 0 0 0 4px rgba(231,76,60,0.12);
+    }
+
     /* Resend row */
     .resend-row {
       display: flex;
@@ -125,7 +132,7 @@
     <div class="top-bar">
       <div class="lang-switcher">
         <button class="lang-btn" id="langBtn" onclick="toggleLang(event)">
-          <span id="langBtnText">EN</span>
+          <span id="langBtnText">ENGLISH</span>
           <svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
         </button>
         <div class="lang-dropdown" id="langDropdown">
@@ -171,10 +178,12 @@
         <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
       </div>
 
+      <div class="error-msg" id="otpError"></div>
+
       <div class="resend-row">
         <span class="resend-hint">Didn't receive the code?</span>
         <button class="resend-btn" id="resendBtn" disabled onclick="resendOtp()">Resend</button>
-        <span class="timer" id="timer">0:30</span>
+        <span class="timer" id="timer">0:10</span>
       </div>
 
       <button class="action-btn" id="verifyBtn" disabled onclick="verify()">
@@ -189,13 +198,62 @@
     </div>
   </div>
 
+  <!-- Floating test button -->
+  <div class="floating-test-wrapper">
+    <span class="floating-test-label">Test Validation</span>
+    <button class="floating-test-btn" id="testBtn" onclick="toggleTestMenu(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="overlay" id="overlay" onclick="closeTestMenu()"></div>
+  <div class="floating-test-menu" id="testMenu">
+    <div class="menu-title">Test Validations</div>
+    <button onclick="triggerTest('wrongOtp')">Wrong OTP</button>
+    <button onclick="triggerTest('invalidOtp')">Invalid OTP (letter/empty)</button>
+    <button onclick="triggerTest('expiredOtp')">OTP Expired</button>
+    <button onclick="triggerTest('failedOtp')">Verification Failed</button>
+  </div>
+
   <script>
     /* ── Phone display ── */
     const phone = sessionStorage.getItem('mpesa_phone') || '+251709 339 499';
     document.getElementById('phoneDisplay').textContent = phone;
 
+    /* ── OTP state ── */
+    let otpExpired = false;
+    let failedAttempts = 0;
+    const MAX_ATTEMPTS = 3;
+
     /* ── OTP box logic ── */
     const boxes = Array.from(document.querySelectorAll('.otp-box'));
+
+    /* ── Error helpers ── */
+    function clearBoxError() {
+      boxes.forEach(b => b.classList.remove('error'));
+    }
+    function setBoxError() {
+      boxes.forEach(b => b.classList.add('error'));
+    }
+
+    function showOtpError(msg) {
+      const el = document.getElementById('otpError');
+      el.textContent = msg;
+      if (msg) {
+        setBoxError();
+        setTimeout(() => {
+          if (el.textContent === msg) { el.textContent = ''; clearBoxError(); }
+        }, 5000);
+      } else {
+        clearBoxError();
+      }
+    }
+
+    function clearBoxes() {
+      boxes.forEach(b => { b.value = ''; b.classList.remove('filled'); b.classList.remove('error'); });
+    }
 
     boxes.forEach((box, i) => {
       box.addEventListener('input', e => {
@@ -203,6 +261,7 @@
         e.target.value = val.slice(0, 1);
         e.target.classList.toggle('filled', val.length > 0);
         if (val && i < boxes.length - 1) boxes[i + 1].focus();
+        showOtpError('');
         checkComplete();
       });
 
@@ -211,6 +270,7 @@
           boxes[i - 1].focus();
           boxes[i - 1].value = '';
           boxes[i - 1].classList.remove('filled');
+          showOtpError('');
           checkComplete();
         }
       });
@@ -226,6 +286,7 @@
         });
         const nextEmpty = boxes.find(b => !b.value);
         if (nextEmpty) nextEmpty.focus(); else boxes[boxes.length - 1].focus();
+        showOtpError('');
         checkComplete();
       });
     });
@@ -238,29 +299,47 @@
     }
 
     function verify() {
+      showOtpError('');
+
+      /* Check expired */
+      if (otpExpired) {
+        showOtpError('OTP expired. Please Request a New Code');
+        clearBoxes();
+        document.getElementById('verifyBtn').classList.remove('active');
+        document.getElementById('verifyBtn').disabled = true;
+        return;
+      }
+
+      /* Check all filled */
+      const allFilled = boxes.every(b => b.value.length === 1);
+      if (!allFilled) {
+        showOtpError('Invalid OTP Entered. Please Try Again');
+        return;
+      }
+
       const code = boxes.map(b => b.value).join('');
-      if (code.length === boxes.length) window.location.href = 'fan-login.html';
+
+      /* Check if any non-digit */
+      if (!/^\d{4}$/.test(code)) {
+        showOtpError('Invalid OTP Entered. Please Try Again');
+        return;
+      }
+
+      /* Accept any valid 4-digit OTP */
+      if (code.length === 4) {
+        window.location.href = 'fan-login.html';
+      }
     }
 
-    /* ── Countdown timer ── */
-    let seconds = 30;
+    /* ── Countdown timer (10 seconds) ── */
+    let seconds = 10;
     const timerEl  = document.getElementById('timer');
     const resendEl = document.getElementById('resendBtn');
 
-    const countdown = setInterval(() => {
-      seconds--;
-      timerEl.textContent = '0:' + String(seconds).padStart(2, '0');
-      if (seconds <= 0) {
-        clearInterval(countdown);
-        timerEl.textContent = '';
-        resendEl.disabled = false;
-      }
-    }, 1000);
-
-    function resendOtp() {
-      resendEl.disabled = true;
-      seconds = 30;
-      timerEl.textContent = '0:30';
+    function startTimer() {
+      seconds = 10;
+      timerEl.textContent = '0:10';
+      otpExpired = false;
       const cd = setInterval(() => {
         seconds--;
         timerEl.textContent = '0:' + String(seconds).padStart(2, '0');
@@ -268,11 +347,67 @@
           clearInterval(cd);
           timerEl.textContent = '';
           resendEl.disabled = false;
+          otpExpired = true;
         }
       }, 1000);
-      boxes.forEach(b => { b.value = ''; b.classList.remove('filled'); });
+    }
+    startTimer();
+
+    function resendOtp() {
+      resendEl.disabled = true;
+      failedAttempts = 0;
+      showOtpError('');
+      clearBoxes();
       boxes[0].focus();
       checkComplete();
+      startTimer();
+    }
+
+    /* ── Test menu ── */
+    function toggleTestMenu(e) {
+      e.stopPropagation();
+      document.getElementById('testMenu').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+    function closeTestMenu() {
+      document.getElementById('testMenu').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+    function triggerTest(type) {
+      closeTestMenu();
+      const msgs = {
+        wrongOtp: 'Wrong OTP entered. Please check the code and try again',
+        invalidOtp: 'Invalid OTP Entered. Please Try Again',
+        expiredOtp: 'OTP expired. Please Request a New Code',
+        failedOtp: 'Verification Failed. Please Request a New Code'
+      };
+      if (type === 'wrongOtp') {
+        /* Fill all boxes, add error styling to show red */
+        const wrong = '1234';
+        boxes.forEach((b, i) => { b.value = wrong[i]; b.classList.add('filled'); });
+        checkComplete();
+        showOtpError(msgs.wrongOtp);
+        return;
+      }
+      if (type === 'invalidOtp') {
+        boxes.forEach((b, i) => { b.value = '5'; b.classList.add('filled'); });
+        boxes[2].value = 'A';
+        checkComplete();
+        showOtpError(msgs.invalidOtp);
+        return;
+      }
+      if (type === 'expiredOtp') {
+        otpExpired = true;
+        clearBoxes();
+        checkComplete();
+      }
+      if (type === 'failedOtp') {
+        failedAttempts = MAX_ATTEMPTS;
+        otpExpired = true;
+        clearBoxes();
+        checkComplete();
+      }
+      showOtpError(msgs[type]);
     }
 
     /* ── Lang switcher ── */
@@ -285,7 +420,7 @@
     function selectLang(lang) {
       document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
       document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
-      document.getElementById('langBtnText').textContent = lang === 'en' ? 'EN' : 'AM';
+      document.getElementById('langBtnText').textContent = lang === 'en' ? 'ENGLISH' : 'አማርኛ';
       document.getElementById('langBtn').classList.remove('open');
       document.getElementById('langDropdown').classList.remove('open');
     }

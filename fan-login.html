@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FAYDA Login — Enter FAN/FCN</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="global.css" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -16,7 +17,6 @@
       background: #1e5f6e;
     }
 
-    /* ── Background ── */
     .bg {
       position: fixed;
       inset: 0;
@@ -33,7 +33,6 @@
       background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
       background-size: 28px 28px;
     }
-
     .arc {
       position: fixed;
       border-radius: 50%;
@@ -45,7 +44,6 @@
     .arc-2 { width: 500px; height: 500px; bottom: -100px; left: -100px; }
     .arc-3 { width: 900px; height: 900px; top: -300px; right: -300px; }
 
-    /* ── Navbar ── */
     .navbar {
       position: relative;
       z-index: 10;
@@ -113,7 +111,6 @@
     .nav-lang-opt .check { color: #1e6070; opacity: 0; }
     .nav-lang-opt.active .check { opacity: 1; }
 
-    /* ── Main ── */
     .main {
       position: relative;
       z-index: 5;
@@ -126,7 +123,6 @@
       gap: 12px;
     }
 
-    /* ── Cards ── */
     .card {
       background: rgba(255,255,255,0.10);
       backdrop-filter: blur(12px);
@@ -137,7 +133,6 @@
       max-width: 440px;
     }
 
-    /* Logo card */
     .logo-card {
       padding: 28px 36px;
       display: flex;
@@ -157,7 +152,6 @@
     .transfer-arrows { display: flex; align-items: center; flex-shrink: 0; }
     .transfer-arrows svg { width: 28px; height: 20px; stroke: rgba(255,255,255,0.70); }
 
-    /* Form card */
     .form-card { padding: 32px 36px 36px; }
 
     .back-btn {
@@ -182,7 +176,6 @@
       margin-bottom: 22px;
     }
 
-    /* ── Step 3: FAN input ── */
     #step-fan { display: block; }
 
     .fan-input {
@@ -205,6 +198,19 @@
       box-shadow: 0 0 0 3px rgba(47,197,109,0.15);
       background: #fff;
     }
+    .fan-input.error {
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 3px rgba(231,76,60,0.15);
+      color: #e74c3c;
+    }
+
+    .fan-error {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #e74c3c;
+      margin-bottom: 8px;
+      min-height: 18px;
+    }
 
     .fan-help {
       display: flex;
@@ -225,7 +231,6 @@
     .fan-help:hover span { color: #fff; }
     .fan-help svg { width: 16px; height: 16px; stroke: rgba(255,255,255,0.75); flex-shrink: 0; }
 
-    /* ── Step 4: OTP verify ── */
     #step-otp { display: none; }
 
     .fan-display {
@@ -242,7 +247,6 @@
       letter-spacing: 1px;
     }
 
-    /* Underline-style OTP inputs */
     .otp-line-boxes {
       display: flex;
       gap: 12px;
@@ -266,6 +270,19 @@
     }
     .otp-line-box:focus { border-color: #2FC56D; }
     .otp-line-box.filled { border-color: rgba(255,255,255,0.85); }
+    .otp-line-box.error {
+      border-color: #e74c3c !important;
+      color: #e74c3c;
+    }
+
+    .otp-error-msg {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #e74c3c;
+      text-align: center;
+      min-height: 18px;
+      margin-bottom: 8px;
+    }
 
     .code-sent-note {
       font-size: 13px;
@@ -276,7 +293,6 @@
     }
     .code-sent-note strong { color: rgba(255,255,255,0.90); font-weight: 700; }
 
-    /* Shared action button */
     .action-btn {
       width: 100%;
       padding: 16px;
@@ -321,7 +337,6 @@
     }
     .resend-timer button.show { display: inline; }
 
-    /* ── Footer ── */
     .footer {
       position: relative;
       z-index: 5;
@@ -346,7 +361,6 @@
   <div class="arc arc-2"></div>
   <div class="arc arc-3"></div>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <img class="nav-logo" src="fayda-logo-hq.png" alt="FAYDA" />
     <div class="nav-lang">
@@ -361,10 +375,38 @@
     </div>
   </nav>
 
-  <!-- Main -->
   <div class="main">
 
-    <!-- Logo strip -->
+    <!-- Validation view card (replaces form card when triggered) -->
+    <div class="card" id="validationView" style="display:none; padding:36px; flex-direction:column; align-items:center; gap:22px; text-align:center; position:relative; overflow:hidden; max-width:440px; width:100%;">
+
+      <!-- Decorative rings -->
+      <div id="valRing1" style="position:absolute;width:220px;height:220px;border-radius:50%;border:2px solid;top:-80px;right:-80px;pointer-events:none;"></div>
+      <div id="valRing2" style="position:absolute;width:150px;height:150px;border-radius:50%;border:1.5px solid;top:-40px;right:-40px;pointer-events:none; opacity:0.6;"></div>
+
+      <!-- Icon -->
+      <div id="valIcon" style="width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;flex-shrink:0;"></div>
+
+      <!-- Text -->
+      <div style="position:relative;z-index:1;">
+        <h2 id="valTitle" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:10px;font-family:'Barlow',sans-serif;"></h2>
+        <p  id="valMsg"   style="font-size:14px;font-weight:500;color:rgba(255,255,255,0.70);line-height:1.7;font-family:'Barlow',sans-serif;max-width:320px;margin:0 auto;"></p>
+      </div>
+
+      <!-- Details list -->
+      <div id="valDetails" style="width:100%;text-align:left;border-top:1px solid rgba(255,255,255,0.12);padding-top:4px;"></div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:10px;width:100%;margin-top:4px;">
+        <button onclick="closeValidation()" style="flex:1;padding:14px;border-radius:50px;border:1.5px solid rgba(255,255,255,0.30);background:transparent;color:rgba(255,255,255,0.85);font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.10)'" onmouseout="this.style.background='transparent'">
+          ← Try Again
+        </button>
+        <button id="valActionBtn" style="flex:1;padding:14px;border-radius:50px;border:none;background:#1a5f72;color:#fff;font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.25);transition:background 0.2s;" onmouseover="this.style.background='#155060'" onmouseout="this.style.background='#1a5f72'">
+          Contact Support
+        </button>
+      </div>
+    </div>
+
     <div class="card logo-card" id="logoCard">
       <img class="mpesa" src="M-Pesa-Logo.png" alt="M-PESA" />
       <div class="transfer-arrows">
@@ -377,8 +419,7 @@
       <img class="fayda-icon" src="fayda-logo-hq.png" alt="FAYDA" />
     </div>
 
-    <!-- Form card -->
-    <div class="card form-card">
+    <div class="card form-card" id="formCard">
 
       <!-- ── STEP 3: Enter FAN/FCN ── -->
       <div id="step-fan">
@@ -395,9 +436,11 @@
           class="fan-input"
           id="fanInput"
           type="text"
-          placeholder="Enter Your FAN (Fayda Alias Number) or FCN (Fayda Card Number)"
+          placeholder="Enter Your FAN or FCN"
           oninput="handleFanInput(this)"
         />
+
+        <div class="fan-error" id="fanError"></div>
 
         <div class="fan-help" onclick="showHelp()">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -422,10 +465,8 @@
           </svg>
         </button>
 
-        <!-- FAN number display -->
         <div class="fan-display" id="fanDisplay"></div>
 
-        <!-- 6 underline OTP inputs -->
         <div class="otp-line-boxes" id="otpLineBoxes">
           <input class="otp-line-box" type="text" inputmode="numeric" maxlength="1" />
           <input class="otp-line-box" type="text" inputmode="numeric" maxlength="1" />
@@ -434,6 +475,8 @@
           <input class="otp-line-box" type="text" inputmode="numeric" maxlength="1" />
           <input class="otp-line-box" type="text" inputmode="numeric" maxlength="1" />
         </div>
+
+        <div class="otp-error-msg" id="fanOtpError"></div>
 
         <p class="code-sent-note">
           Code has been sent to your registered Mobile Number:<br>
@@ -454,7 +497,24 @@
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- Floating test button -->
+  <div class="floating-test-wrapper">
+    <span class="floating-test-label">Test Validation</span>
+    <button class="floating-test-btn" id="testBtn" onclick="toggleTestMenu(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="overlay" id="overlay" onclick="closeTestMenu()"></div>
+  <div class="floating-test-menu" id="testMenu">
+    <div class="menu-title">Test Validations</div>
+    <button onclick="triggerValidation('limitReached')">Link Limit Reached</button>
+    <button onclick="triggerValidation('inProgress')">Request In Progress</button>
+    <button onclick="triggerValidation('alreadyLinked')">Already Linked</button>
+  </div>
+
   <footer class="footer">
     <span>Powered by</span>
     <div class="footer-brand">
@@ -464,7 +524,6 @@
     <span style="font-weight:700; color:rgba(255,255,255,0.55);">2.0</span>
   </footer>
 
-  <!-- Help modal -->
   <div id="helpModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.50); z-index:100; align-items:center; justify-content:center;">
     <div style="background:#fff; border-radius:16px; padding:36px; max-width:400px; width:90%; position:relative;">
       <button onclick="document.getElementById('helpModal').style.display='none'" style="position:absolute; top:16px; right:16px; background:none; border:none; cursor:pointer; font-size:22px; color:#666;">&times;</button>
@@ -480,29 +539,34 @@
 
   <script>
     /* ── Step 3: FAN input ── */
+    function showFanError(msg) {
+      const el = document.getElementById('fanError');
+      const input = document.getElementById('fanInput');
+      el.textContent = msg;
+      input.classList.toggle('error', !!msg);
+      if (msg) setTimeout(() => { if (el.textContent === msg) showFanError(''); }, 5000);
+    }
+
     function handleFanInput(input) {
       const btn = document.getElementById('sendBtn');
       const ok = input.value.trim().length >= 4;
       btn.classList.toggle('active', ok);
       btn.disabled = !ok;
+      showFanError('');
+      input.classList.remove('error');
     }
 
     function goToOtp() {
       const val = document.getElementById('fanInput').value.trim();
       if (val.length < 4) return;
 
-      /* show FAN in display field */
       document.getElementById('fanDisplay').textContent = val;
-
-      /* mask the last 4 digits of FAN as phone hint */
       const last4 = val.slice(-4);
       document.getElementById('maskedPhone').textContent = 'XXXXXX' + last4;
 
-      /* switch views */
       document.getElementById('step-fan').style.display = 'none';
       document.getElementById('step-otp').style.display = 'block';
 
-      /* start countdown */
       startCountdown();
       setTimeout(() => document.querySelectorAll('.otp-line-box')[0].focus(), 100);
     }
@@ -520,6 +584,14 @@
 
     /* ── Step 4: OTP verify ── */
     const lineBoxes = Array.from(document.querySelectorAll('.otp-line-box'));
+    let fanOtpExpired = false;
+
+    function showFanOtpError(msg) {
+      const el = document.getElementById('fanOtpError');
+      el.textContent = msg;
+      lineBoxes.forEach(b => b.classList.toggle('error', !!msg));
+      if (msg) setTimeout(() => { if (el.textContent === msg) { el.textContent = ''; lineBoxes.forEach(b => b.classList.remove('error')); } }, 5000);
+    }
 
     lineBoxes.forEach((box, i) => {
       box.addEventListener('input', e => {
@@ -527,6 +599,7 @@
         e.target.value = val.slice(0, 1);
         e.target.classList.toggle('filled', val.length > 0);
         if (val && i < lineBoxes.length - 1) lineBoxes[i + 1].focus();
+        showFanOtpError('');
         checkOtpComplete();
       });
       box.addEventListener('keydown', e => {
@@ -534,6 +607,7 @@
           lineBoxes[i - 1].focus();
           lineBoxes[i - 1].value = '';
           lineBoxes[i - 1].classList.remove('filled');
+          showFanOtpError('');
           checkOtpComplete();
         }
       });
@@ -545,6 +619,7 @@
         });
         const next = lineBoxes.find(b => !b.value);
         (next || lineBoxes[lineBoxes.length - 1]).focus();
+        showFanOtpError('');
         checkOtpComplete();
       });
     });
@@ -557,21 +632,31 @@
     }
 
     function clearOtp() {
-      lineBoxes.forEach(b => { b.value = ''; b.classList.remove('filled'); });
+      lineBoxes.forEach(b => { b.value = ''; b.classList.remove('filled'); b.classList.remove('error'); });
       checkOtpComplete();
     }
 
     function verifyOtp() {
+      showFanOtpError('');
+      if (fanOtpExpired) {
+        showFanOtpError('OTP expired. Please request a new code.');
+        clearOtp();
+        return;
+      }
+      const allFilled = lineBoxes.every(b => b.value.length === 1);
+      if (!allFilled) { showFanOtpError('Invalid OTP. Please try again.'); return; }
       const code = lineBoxes.map(b => b.value).join('');
-      if (code.length === 6) window.location.href = 'consent.html';
+      if (!/^\d{6}$/.test(code)) { showFanOtpError('Invalid OTP. Please try again.'); return; }
+      window.location.href = 'consent.html';
     }
 
     /* ── Countdown timer ── */
     let timerInterval;
-    let timerSecs = 291; // 04:51
+    let timerSecs = 291;
 
     function startCountdown() {
       timerSecs = 291;
+      fanOtpExpired = false;
       updateTimerDisplay();
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
@@ -582,6 +667,7 @@
           document.getElementById('resendText').style.display = 'none';
           document.getElementById('timerDisplay').style.display = 'none';
           document.getElementById('resendBtn').classList.add('show');
+          fanOtpExpired = true;
         }
       }, 1000);
     }
@@ -597,12 +683,13 @@
       document.getElementById('resendBtn').classList.remove('show');
       document.getElementById('resendText').style.display = '';
       document.getElementById('timerDisplay').style.display = '';
+      fanOtpExpired = false;
       clearOtp();
       lineBoxes[0].focus();
       startCountdown();
     }
 
-    /* ── Nav lang switcher ── */
+    /* ── Nav lang ── */
     function toggleNavLang(e) {
       e.stopPropagation();
       document.getElementById('navLangBtn').classList.toggle('open');
@@ -619,6 +706,87 @@
       document.getElementById('navLangBtn').classList.remove('open');
       document.getElementById('navLangDd').classList.remove('open');
     });
+
+    /* ── Test menu ── */
+    function toggleTestMenu(e) {
+      e.stopPropagation();
+      document.getElementById('testMenu').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+    function closeTestMenu() {
+      document.getElementById('testMenu').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+    const validations = {
+      limitReached: {
+        iconBg: 'rgba(231,76,60,0.18)', ringColor: 'rgba(231,76,60,0.35)',
+        icon: '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',
+        title: 'Link Limit Reached',
+        msg: 'This Fayda ID is already linked to the maximum number of M-PESA accounts.',
+        details: [
+          { icon: '⚠️', text: 'Maximum of <strong>3 linked M-PESA accounts</strong> per Fayda ID has been reached.' },
+          { icon: '🔓', text: 'Unlink an existing account from your <strong>Fayda profile</strong> to add a new one.' },
+          { icon: '📞', text: 'Call M-PESA support at <strong>*456#</strong> if you believe this is an error.' }
+        ],
+        btnLabel: 'Unlink Account'
+      },
+      inProgress: {
+        iconBg: 'rgba(52,152,219,0.18)', ringColor: 'rgba(52,152,219,0.35)',
+        icon: '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+        title: 'Request In Progress',
+        msg: 'We have already received a request to link this Fayda ID. It is currently being processed.',
+        details: [
+          { icon: '⏳', text: 'Your previous request is <strong>being verified</strong>. This takes 1–5 minutes.' },
+          { icon: '📱', text: 'An <strong>SMS confirmation</strong> will be sent when linking is complete.' },
+          { icon: '🔄', text: 'No SMS after 10 minutes? <strong>Try again</strong> or contact support.' }
+        ],
+        btnLabel: 'Check Status'
+      },
+      alreadyLinked: {
+        iconBg: 'rgba(47,197,109,0.18)', ringColor: 'rgba(47,197,109,0.35)',
+        icon: '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#2FC56D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+        title: 'Already Linked',
+        msg: 'Your M-PESA wallet is already linked with this Fayda ID.',
+        details: [
+          { icon: '✅', text: 'Your account is <strong>fully verified</strong>. No further action is needed.' },
+          { icon: '🔒', text: 'Your Fayda ID is <strong>securely bound</strong> to your M-PESA wallet.' },
+          { icon: '💳', text: 'You can use <strong>Fayda-verified M-PESA services</strong> without re-verification.' }
+        ],
+        btnLabel: 'View Account'
+      }
+    };
+
+    function triggerValidation(type) {
+      closeTestMenu();
+      const v = validations[type];
+      // Icon
+      document.getElementById('valIcon').style.background = v.iconBg;
+      document.getElementById('valIcon').innerHTML = v.icon;
+      // Decorative rings
+      document.getElementById('valRing1').style.borderColor = v.ringColor;
+      document.getElementById('valRing2').style.borderColor = v.ringColor;
+      // Text
+      document.getElementById('valTitle').textContent = v.title;
+      document.getElementById('valMsg').textContent   = v.msg;
+      // Details rows
+      document.getElementById('valDetails').innerHTML = v.details.map(d => `
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.10);">
+          <span style="font-size:18px;flex-shrink:0;line-height:1.4;">${d.icon}</span>
+          <p style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.65;margin:0;font-family:'Barlow',sans-serif;">${d.text}</p>
+        </div>
+      `).join('');
+      // Button label
+      document.getElementById('valActionBtn').textContent = v.btnLabel;
+      // Swap
+      document.getElementById('logoCard').style.display = 'none';
+      document.getElementById('formCard').style.display = 'none';
+      document.getElementById('validationView').style.display = 'flex';
+    }
+    function closeValidation() {
+      document.getElementById('validationView').style.display = 'none';
+      document.getElementById('logoCard').style.display = 'flex';
+      document.getElementById('formCard').style.display = 'block';
+    }
   </script>
 
 </body>

@@ -7,160 +7,74 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="global.css" />
   <style>
-    /* ── Profile header ── */
+    /* Compact profile header - inline row */
     .profile-header {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 36px;
-    }
-
-    .avatar-wrap {
-      position: relative;
-      width: 96px;
-      height: 96px;
-    }
-
-    .avatar-img {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #2FC56D;
-    }
-
-    /* Placeholder avatar */
-    .avatar-placeholder {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #d0ead8 0%, #b6dfc2 100%);
-      border: 3px solid #2FC56D;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .avatar-placeholder svg {
-      width: 56px;
-      height: 56px;
-      stroke: #239150;
-    }
-
-    .profile-name {
-      font-size: 20px;
-      font-weight: 800;
-      color: #1a1a1a;
-      text-align: center;
-    }
-
-    .profile-phone-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .profile-phone-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #888;
-    }
-
-    .profile-phone-val {
-      font-size: 13px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    /* ── Profile fields ── */
-    .fields-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      margin-bottom: 44px;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding: 16px 20px;
+      background: #f9fafb;
       border: 1px solid #f0f0f0;
       border-radius: 14px;
-      overflow: hidden;
     }
 
-    .field-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      padding: 16px 20px;
-      border-bottom: 1px solid #f0f0f0;
-      background: #fff;
-    }
-
-    .field-row:last-child { border-bottom: none; }
-
-    .field-label {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .field-value {
-      font-size: 16px;
-      font-weight: 700;
-      color: #1a1a1a;
-    }
-
-    /* Page title row */
-    .page-title-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 36px;
-      gap: 12px;
-    }
-
-    .close-btn {
-      width: 36px;
-      height: 36px;
+    .avatar-placeholder {
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: #f4f4f4;
-      border: none;
-      cursor: pointer;
+      background: linear-gradient(135deg, #d0ead8 0%, #b6dfc2 100%);
+      border: 2.5px solid #2FC56D;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: background 0.2s;
     }
-    .close-btn:hover { background: #eaeaea; }
-    .close-btn svg { width: 16px; height: 16px; stroke: #555; }
+    .avatar-placeholder svg { width: 32px; height: 32px; stroke: #239150; }
 
-    .page-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: #1a1a1a;
+    .profile-info { display: flex; flex-direction: column; gap: 2px; }
+    .profile-name  { font-size: 16px; font-weight: 800; color: #1a1a1a; }
+    .profile-phone-row { display: flex; align-items: center; gap: 5px; }
+    .profile-phone-label { font-size: 12px; font-weight: 600; color: #999; }
+    .profile-phone-val   { font-size: 12px; font-weight: 700; color: #555; }
+
+    /* Two-column fields grid */
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: #f0f0f0;
+      border: 1px solid #f0f0f0;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .field-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 16px 18px;
+      background: #fff;
+    }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #bbb;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.6px;
     }
 
-    /* Steps at top showing current */
-    .form-area { overflow-y: auto; }
-
-    /* Loading shimmer on fields */
-    @keyframes shimmer {
-      0%   { background-position: -600px 0; }
-      100% { background-position: 600px 0; }
+    .field-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1.3;
     }
-    .shimmer {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 600px 100%;
-      animation: shimmer 1.2s infinite;
-      border-radius: 6px;
-    }
-    .field-value.shimmer { height: 20px; width: 70%; }
 
-    .loading-fields .field-value { display: none; }
-    .loading-fields .field-value-shimmer { display: block; }
-    .field-value-shimmer { display: none; height: 20px; width: 65%; border-radius: 6px; }
+    /* instruction override — smaller margin for this page */
+    .instruction { margin-bottom: 24px; }
   </style>
 </head>
 <body>
@@ -169,7 +83,6 @@
   <div class="left-panel">
     <div class="left-content">
       <h1 class="left-title">Verify Your M-PESA<br>Account with FAYDA</h1>
-
       <div class="logo-strip">
         <div class="logo-bubble"><img src="fayda-logo-hq.png" alt="FAYDA" /></div>
         <div class="connector">
@@ -188,7 +101,6 @@
         </div>
         <div class="logo-bubble"><img src="M-Pesa-Logo.png" alt="M-PESA" /></div>
       </div>
-
       <div class="left-tagline">
         <p>የፋይዳ መለያ ቁጥርን እኩዎንትዮ ጋር ያስተሳስሩ</p>
         <p>Link your FAYDA ID with your account</p>
@@ -201,7 +113,7 @@
     <div class="top-bar">
       <div class="lang-switcher">
         <button class="lang-btn" id="langBtn" onclick="toggleLang(event)">
-          <span id="langBtnText">EN</span>
+          <span id="langBtnText">ENGLISH</span>
           <svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
         </button>
         <div class="lang-dropdown" id="langDropdown">
@@ -217,83 +129,106 @@
 
     <div class="form-area">
 
-      <!-- Step indicators: 1-4 done, 5 active -->
+      <!-- ── Validation state (replaces form when triggered) ── -->
+      <div id="validationView" style="display:none; flex-direction:column; align-items:center; flex:1; gap:0; text-align:center; width:100%;">
+
+        <!-- Decorative icon area -->
+        <div id="valBanner" style="width:100%; border-radius:16px; padding:40px 32px 32px; margin-bottom:28px; position:relative; overflow:hidden;">
+          <!-- Ring decoration -->
+          <div id="valRing1" style="position:absolute;width:200px;height:200px;border-radius:50%;border:2px solid;opacity:0.12;top:-60px;right:-60px;"></div>
+          <div id="valRing2" style="position:absolute;width:140px;height:140px;border-radius:50%;border:2px solid;opacity:0.09;top:-20px;right:-20px;"></div>
+          <!-- Main icon -->
+          <div id="valIcon" style="width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px; position:relative; z-index:1;"></div>
+          <h2 id="valTitle" style="font-size:24px;font-weight:800;color:#1a1a1a;margin-bottom:10px;"></h2>
+          <p  id="valMsg"   style="font-size:14.5px;font-weight:500;color:#666;line-height:1.75;max-width:340px;margin:0 auto;"></p>
+        </div>
+
+        <!-- What this means section -->
+        <div style="width:100%; border:1px solid #f0f0f0; border-radius:14px; overflow:hidden; margin-bottom:28px;">
+          <div style="padding:14px 20px; background:#f9fafb; border-bottom:1px solid #f0f0f0; text-align:left;">
+            <span style="font-size:12px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.6px;">What this means</span>
+          </div>
+          <div id="valDetails" style="padding:20px; display:flex; flex-direction:column; gap:14px; text-align:left;"></div>
+        </div>
+
+        <!-- Action row -->
+        <div style="display:flex; gap:12px; width:100%;">
+          <button onclick="closeValidation()" style="flex:1; padding:18px; border-radius:50px; border:2px solid #e0e0e0; background:#fff; font-family:'Barlow',sans-serif; font-size:14px; font-weight:700; color:#555; cursor:pointer; transition:border-color 0.2s;" onmouseover="this.style.borderColor='#239150';this.style.color='#239150'" onmouseout="this.style.borderColor='#e0e0e0';this.style.color='#555'">
+            ← Try Again
+          </button>
+          <button id="valContactBtn" onclick="window.open('https://safaricom.et/support','_blank')" style="flex:1; padding:18px; border-radius:50px; border:none; background:linear-gradient(135deg,#2FC56D,#239150); font-family:'Barlow',sans-serif; font-size:14px; font-weight:700; color:#fff; cursor:pointer; box-shadow:0 6px 20px rgba(35,145,80,0.25);">
+            Contact Support
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ── Normal form content ── -->
+      <div id="mainContent">
+
+      <!-- Steps: 1–4 done, 5 active -->
       <div class="steps">
-        <div class="step done">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="step done"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="step-line done"></div>
-        <div class="step done">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="step done"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="step-line done"></div>
-        <div class="step done">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="step done"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="step-line done"></div>
-        <div class="step done">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+        <div class="step done"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="step-line done"></div>
         <div class="step active">5</div>
       </div>
 
-      <!-- Page title -->
-      <div class="page-title-row">
-        <button class="close-btn" onclick="history.back()">
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-        <span class="page-title">Confirm Your Profile</span>
-      </div>
+      <!-- Title — same style as page 1 & 2 instruction -->
+      <p class="instruction">Confirm Your Profile</p>
 
-      <!-- Profile header -->
+      <!-- Compact profile header row -->
       <div class="profile-header">
         <div class="avatar-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </div>
-        <div class="profile-name" id="profileName">Zemedkun Kidane</div>
-        <div class="profile-phone-row">
-          <span class="profile-phone-label">Phone Number</span>
-          <span class="profile-phone-val" id="profilePhone">079 123 1222</span>
+        <div class="profile-info">
+          <div class="profile-name">Zemedkun Kidane</div>
+          <div class="profile-phone-row">
+            <span class="profile-phone-label">Phone Number</span>
+            <span class="profile-phone-val">079 123 1222</span>
+          </div>
         </div>
       </div>
 
-      <!-- Profile fields -->
-      <div class="fields-list" id="fieldsList">
-        <div class="field-row">
+      <!-- 2-column fields grid -->
+      <div class="fields-grid">
+        <div class="field-cell">
           <span class="field-label">Full Name</span>
           <span class="field-value">Mikias Dereje</span>
         </div>
-        <div class="field-row">
+        <div class="field-cell">
           <span class="field-label">Phone Number</span>
           <span class="field-value">0911032052</span>
         </div>
-        <div class="field-row">
+        <div class="field-cell">
           <span class="field-label">Address</span>
           <span class="field-value">Avenue 2001, n23 Ethiopia</span>
         </div>
-        <div class="field-row">
+        <div class="field-cell">
           <span class="field-label">Birthdate</span>
           <span class="field-value">12/27/2027</span>
         </div>
-        <div class="field-row">
+        <div class="field-cell">
           <span class="field-label">Nationality</span>
           <span class="field-value">Ethiopian</span>
         </div>
-        <div class="field-row">
+        <div class="field-cell">
           <span class="field-label">Gender</span>
           <span class="field-value">Male</span>
         </div>
       </div>
 
       <!-- Confirm button -->
-      <button class="action-btn active" onclick="confirm()">
+      <button class="action-btn active" onclick="goNext()">
         <span>Confirm</span>
         <div class="btn-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
@@ -303,13 +238,13 @@
         </div>
       </button>
 
+      </div><!-- end #mainContent -->
+
     </div>
   </div>
 
   <script>
-    function confirm() {
-      window.location.href = 'success.html';
-    }
+    function goNext() { window.location.href = 'success.html'; }
 
     function toggleLang(e) {
       e.stopPropagation();
@@ -319,15 +254,117 @@
     function selectLang(lang) {
       document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
       document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
-      document.getElementById('langBtnText').textContent = lang === 'en' ? 'EN' : 'AM';
+      document.getElementById('langBtnText').textContent = lang === 'en' ? 'ENGLISH' : 'አማርኛ';
       document.getElementById('langBtn').classList.remove('open');
       document.getElementById('langDropdown').classList.remove('open');
     }
     document.addEventListener('click', () => {
       document.getElementById('langBtn').classList.remove('open');
       document.getElementById('langDropdown').classList.remove('open');
+      closeTestMenu();
     });
+
+    /* ── Floating test button ── */
+    function toggleTestMenu(e) {
+      e.stopPropagation();
+      document.getElementById('testMenu').classList.toggle('open');
+      document.getElementById('ftOverlay').classList.toggle('open');
+    }
+    function closeTestMenu() {
+      document.getElementById('testMenu')?.classList.remove('open');
+      document.getElementById('ftOverlay')?.classList.remove('open');
+    }
+
+    const validations = {
+      limitReached: {
+        bannerBg: '#fff5f5', iconBg: '#fddede', ringColor: '#e74c3c',
+        icon: '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>',
+        title: 'Link Limit Reached',
+        msg: 'This Fayda ID is already linked to the maximum number of M-PESA accounts.',
+        details: [
+          { icon: '⚠️', text: 'You have reached the maximum of <strong>3 linked M-PESA accounts</strong> per Fayda ID.' },
+          { icon: '🔓', text: 'To link a new account, please <strong>unlink an existing one</strong> from your Fayda profile first.' },
+          { icon: '📞', text: 'Contact M-PESA support at <strong>*733#</strong> if you believe this is an error.' }
+        ],
+        contactLabel: 'Unlink Account'
+      },
+      inProgress: {
+        bannerBg: '#f0f7ff', iconBg: '#d6eaff', ringColor: '#3498db',
+        icon: '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+        title: 'Request In Progress',
+        msg: 'We have already received a request to link this Fayda ID. It is currently being processed by the system.',
+        details: [
+          { icon: '⏳', text: 'Your previous request is <strong>being verified</strong>. This usually takes 1–5 minutes.' },
+          { icon: '📱', text: 'You will receive an <strong>SMS confirmation</strong> once linking is complete.' },
+          { icon: '🔄', text: 'If no SMS arrives within 10 minutes, please <strong>try again</strong> or contact support.' }
+        ],
+        contactLabel: 'Check Status'
+      },
+      alreadyLinked: {
+        bannerBg: '#f0faf4', iconBg: '#d4f4e2', ringColor: '#2FC56D',
+        icon: '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#2FC56D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+        title: 'Already Linked',
+        msg: 'Your M-PESA wallet is already linked with this Fayda ID.',
+        details: [
+          { icon: '✅', text: 'Your account is <strong>fully verified</strong>. No further action is needed.' },
+          { icon: '🔒', text: 'Your Fayda ID is <strong>securely bound</strong> to your M-PESA wallet.' },
+          { icon: '💳', text: 'You can now use <strong>Fayda-verified M-PESA services</strong> without re-verification.' }
+        ],
+        contactLabel: 'View Account'
+      }
+    };
+
+    function triggerValidation(type) {
+      closeTestMenu();
+      const v = validations[type];
+      // Banner
+      document.getElementById('valBanner').style.background = v.bannerBg;
+      document.getElementById('valRing1').style.borderColor = v.ringColor;
+      document.getElementById('valRing2').style.borderColor = v.ringColor;
+      // Icon
+      document.getElementById('valIcon').style.background = v.iconBg;
+      document.getElementById('valIcon').innerHTML = v.icon;
+      // Text
+      document.getElementById('valTitle').textContent = v.title;
+      document.getElementById('valMsg').textContent   = v.msg;
+      // Details
+      const det = document.getElementById('valDetails');
+      det.innerHTML = v.details.map(d => `
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <span style="font-size:18px;flex-shrink:0;line-height:1.4;">${d.icon}</span>
+          <p style="font-size:13.5px;color:#555;line-height:1.65;margin:0;">${d.text}</p>
+        </div>
+      `).join('');
+      // Contact button label
+      document.getElementById('valContactBtn').textContent = v.contactLabel;
+      // Swap views
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('validationView').style.display = 'flex';
+    }
+    function closeValidation() {
+      document.getElementById('validationView').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+    }
   </script>
+
+  <!-- Floating test button -->
+  <div class="floating-test-wrapper">
+    <span class="floating-test-label">Test Validation</span>
+    <button class="floating-test-btn" id="testBtn" onclick="toggleTestMenu(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="overlay" id="ftOverlay" onclick="closeTestMenu()"></div>
+  <div class="floating-test-menu" id="testMenu">
+    <div class="menu-title">Test Validations</div>
+    <button onclick="triggerValidation('limitReached')">Link Limit Reached</button>
+    <button onclick="triggerValidation('inProgress')">Request In Progress</button>
+    <button onclick="triggerValidation('alreadyLinked')">Already Linked</button>
+  </div>
+
 
 </body>
 </html>

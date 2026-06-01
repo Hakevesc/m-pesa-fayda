@@ -274,6 +274,19 @@ body {
 }
 
 /* ═══════════════════════════════
+   ERROR MESSAGE
+═══════════════════════════════ */
+.error-msg {
+  color: #e74c3c;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-left: 2px;
+  min-height: 0;
+  transition: opacity 0.3s;
+}
+
+/* ═══════════════════════════════
    ACTION BUTTON (shared)
 ═══════════════════════════════ */
 .action-btn {
@@ -327,6 +340,248 @@ body {
 
 .btn-icon svg { width: 20px; height: 20px; stroke: #aaa; }
 .action-btn.active .btn-icon svg { stroke: #fff; }
+
+/* ═══════════════════════════════
+   FLOATING TEST BUTTON
+═══════════════════════════════ */
+.floating-test-wrapper {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.floating-test-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(35,145,80,0.90);
+  padding: 8px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.floating-test-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #239150;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(35,145,80,0.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+.floating-test-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(35,145,80,0.55);
+}
+.floating-test-btn svg { width: 24px; height: 24px; stroke: #fff; stroke-width: 2.5; }
+
+.floating-test-menu {
+  position: fixed;
+  bottom: 88px;
+  right: 24px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 8px 0;
+  min-width: 240px;
+  z-index: 1001;
+  display: none;
+  overflow: hidden;
+}
+.floating-test-menu.open { display: block; }
+
+.floating-test-menu .menu-title {
+  padding: 12px 18px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #239150;
+  letter-spacing: 0.5px;
+}
+
+.floating-test-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 18px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.floating-test-menu button:hover { background: #f4f8f5; }
+.floating-test-menu button:not(:last-of-type) { border-bottom: 1px solid #f0f0f0; }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: none;
+}
+.overlay.open { display: block; }
+
+/* ═══════════════════════════════
+   MOBILE RESPONSIVE (≤ 768px)
+═══════════════════════════════ */
+
+/* Elements only visible on mobile */
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .mobile-only { display: flex; }
+
+  /* ── Layout: stack vertically ── */
+  body {
+    flex-direction: column;
+    background: #239150;
+    min-height: 100vh;
+  }
+
+  /* ── Left panel → top green header ── */
+  .left-panel {
+    width: 100%;
+    min-height: auto;
+    flex-shrink: 0;
+    padding-bottom: 0;
+  }
+
+  .left-panel::before {
+    height: 100%;
+  }
+
+  .left-content {
+    padding: 48px 24px 52px;
+    gap: 18px;
+  }
+
+  .left-title {
+    font-size: 21px;
+    letter-spacing: 0.2px;
+  }
+
+  /* Logo strip: white solid background on mobile */
+  .logo-strip {
+    background: #fff;
+    border-radius: 22px;
+    padding: 12px 24px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+
+  .logo-bubble {
+    width: 72px;
+    height: 72px;
+  }
+  .logo-bubble img {
+    width: 52px;
+    height: 52px;
+  }
+  .arrow-circle {
+    width: 44px;
+    height: 44px;
+  }
+  .arrow-circle svg { width: 22px; height: 22px; }
+
+  /* Hide tagline from green section on mobile — shown in white panel */
+  .left-tagline { display: none; }
+
+  /* ── Right panel → white card slides up over green ── */
+  .right-panel {
+    width: 100%;
+    min-height: auto;
+    flex: 1;
+    border-radius: 28px 28px 0 0;
+    margin-top: -28px;
+    position: relative;
+    z-index: 5;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+  }
+
+  /* Hide desktop top-bar on mobile (lang is in mobile-lang-bar) */
+  .top-bar { display: none; }
+
+  /* Mobile lang bar (inside left-panel) */
+  .mobile-lang-bar {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    z-index: 10;
+    display: flex;
+  }
+
+  .mobile-lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.18);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .mobile-lang-btn svg { width: 10px; height: 10px; fill: #fff; }
+
+  /* Form area: full width, no max-width constraint */
+  .form-area {
+    padding: 28px 24px 40px;
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* Slightly tighter steps on small screens */
+  .step       { width: 30px; height: 30px; font-size: 12px; }
+  .step-line  { max-width: 32px; }
+
+  /* Instruction text */
+  .instruction { font-size: 19px; }
+
+  /* Mobile tagline: shown above button in white panel */
+  .mobile-tagline {
+    display: block;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+  }
+  .mobile-tagline p {
+    font-family: 'Barlow', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #888;
+    line-height: 1.65;
+  }
+  .mobile-tagline p:first-child { color: #aaa; }
+
+  /* Floating test button — smaller on mobile */
+  .floating-test-wrapper { bottom: 16px; right: 16px; gap: 8px; }
+  .floating-test-btn { width: 44px; height: 44px; }
+  .floating-test-btn svg { width: 20px; height: 20px; }
+  .floating-test-label { font-size: 12px; padding: 6px 12px; }
+  .floating-test-menu { right: 16px; bottom: 72px; min-width: 200px; }
+}
 
 /* ═══════════════════════════════
    SHARED LANG SCRIPT HELPERS

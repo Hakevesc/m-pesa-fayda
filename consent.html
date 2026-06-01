@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Consent — M-PESA with FAYDA</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="global.css" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -16,7 +17,6 @@
       background: #1e5f6e;
     }
 
-    /* ── Background ── */
     .bg {
       position: fixed;
       inset: 0;
@@ -44,7 +44,6 @@
     .arc-2 { width: 500px; height: 500px; bottom: -100px; left: -100px; }
     .arc-3 { width: 900px; height: 900px; top: -300px; right: -300px; }
 
-    /* ── Navbar ── */
     .navbar {
       position: relative;
       z-index: 10;
@@ -112,7 +111,6 @@
     .nav-lang-opt .check { color: #1e6070; opacity: 0; }
     .nav-lang-opt.active .check { opacity: 1; }
 
-    /* ── Main ── */
     .main {
       position: relative;
       z-index: 5;
@@ -132,7 +130,6 @@
       gap: 0;
     }
 
-    /* ── Timer banner ── */
     .timer-banner {
       text-align: center;
       margin-bottom: 24px;
@@ -150,8 +147,8 @@
       letter-spacing: 2px;
       font-variant-numeric: tabular-nums;
     }
+    .timer-value.expired { color: #e74c3c; }
 
-    /* ── Logo strip ── */
     .logo-strip {
       display: flex;
       align-items: center;
@@ -183,7 +180,6 @@
     .swap-icon { flex-shrink: 0; }
     .swap-icon svg { width: 28px; height: 22px; stroke: rgba(255,255,255,0.65); }
 
-    /* ── Request text ── */
     .request-text {
       font-size: 16px;
       font-weight: 600;
@@ -194,7 +190,6 @@
     }
     .request-text strong { color: #fff; font-weight: 800; }
 
-    /* ── Claims section ── */
     .claims-section {
       background: rgba(255,255,255,0.08);
       backdrop-filter: blur(10px);
@@ -203,7 +198,6 @@
       overflow: hidden;
       margin-bottom: 14px;
     }
-
     .claims-header {
       display: flex;
       align-items: center;
@@ -211,200 +205,99 @@
       padding: 14px 18px 12px;
       border-bottom: 1px solid rgba(255,255,255,0.10);
     }
-    .claims-header h3 {
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-    }
+    .claims-header h3 { font-size: 15px; font-weight: 700; color: #fff; }
     .info-icon {
-      width: 17px;
-      height: 17px;
-      border-radius: 50%;
+      width: 17px; height: 17px; border-radius: 50%;
       border: 1.5px solid rgba(255,255,255,0.45);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0;
     }
     .info-icon svg { width: 10px; height: 10px; stroke: rgba(255,255,255,0.65); }
-
-    /* Claim row */
     .claim-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer;
       transition: background 0.15s;
       border-bottom: 1px solid rgba(255,255,255,0.07);
     }
     .claim-row:last-child { border-bottom: none; }
     .claim-row:hover { background: rgba(255,255,255,0.06); }
-
-    .claim-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .claim-chevron {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      transition: transform 0.2s;
-    }
+    .claim-left { display: flex; align-items: center; gap: 12px; }
+    .claim-chevron { width: 18px; height: 18px; flex-shrink: 0; transition: transform 0.2s; }
     .claim-chevron svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.50); }
     .claim-row.open .claim-chevron { transform: rotate(90deg); }
-
-    .claim-name {
-      font-size: 14px;
-      font-weight: 500;
-      color: rgba(255,255,255,0.90);
-    }
-
-    .claim-badge {
-      font-size: 12px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.45);
-      letter-spacing: 0.3px;
-    }
-
-    /* Toggle switch for voluntary claims */
-    .toggle-wrap {
-      display: flex;
-      align-items: center;
-    }
-    .toggle {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      flex-shrink: 0;
-    }
+    .claim-name { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.90); }
+    .claim-badge { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.45); letter-spacing: 0.3px; }
+    .toggle-wrap { display: flex; align-items: center; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle-slider {
-      position: absolute;
-      inset: 0;
-      background: rgba(255,255,255,0.20);
-      border-radius: 24px;
-      cursor: pointer;
-      transition: background 0.2s;
+      position: absolute; inset: 0; background: rgba(255,255,255,0.20);
+      border-radius: 24px; cursor: pointer; transition: background 0.2s;
     }
     .toggle-slider::before {
-      content: '';
-      position: absolute;
-      width: 18px;
-      height: 18px;
-      left: 3px;
-      top: 3px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform 0.2s;
+      content: ''; position: absolute; width: 18px; height: 18px;
+      left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s;
     }
     .toggle input:checked + .toggle-slider { background: #2FC56D; }
     .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
-
-    /* Claim detail panel */
     .claim-detail {
-      display: none;
-      padding: 0 18px 14px 44px;
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.55);
-      line-height: 1.6;
+      display: none; padding: 0 18px 14px 44px;
+      font-size: 12.5px; color: rgba(255,255,255,0.55); line-height: 1.6;
     }
     .claim-row.open + .claim-detail { display: block; }
 
-    /* ── Bottom action bar ── */
     .action-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 20;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
       background: linear-gradient(to top, rgba(22,63,80,0.98) 80%, transparent);
-      padding: 20px 24px 28px;
-      display: flex;
-      gap: 14px;
-      justify-content: center;
+      padding: 20px 24px 28px; display: flex; gap: 14px; justify-content: center;
     }
-
     .btn-decline {
-      flex: 1;
-      max-width: 220px;
-      padding: 16px;
-      border-radius: 50px;
+      flex: 1; max-width: 220px; padding: 16px; border-radius: 50px;
       border: 2px solid rgba(255,255,255,0.30);
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      font-family: 'Barlow', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
+      background: rgba(255,255,255,0.08); backdrop-filter: blur(8px);
+      color: #fff; font-family: 'Barlow', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
     }
     .btn-decline:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.50); }
-
     .btn-accept {
-      flex: 1;
-      max-width: 220px;
-      padding: 16px;
-      border-radius: 50px;
-      border: none;
-      background: #163f50;
-      color: #fff;
-      font-family: 'Barlow', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      flex: 1; max-width: 220px; padding: 16px; border-radius: 50px;
+      border: none; background: #163f50; color: #fff;
+      font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
       transition: background 0.2s, box-shadow 0.2s;
     }
     .btn-accept:hover { background: #1a5060; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
 
-    /* ── Footer ── */
+    .consent-error {
+      text-align: center; font-size: 13px; font-weight: 600;
+      color: #e74c3c; margin-top: 8px; min-height: 20px;
+    }
+
     .footer {
-      position: relative;
-      z-index: 5;
-      background: #163f50;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      flex-shrink: 0;
+      position: relative; z-index: 5; background: #163f50;
+      padding: 14px 20px; display: flex; align-items: center;
+      justify-content: center; gap: 8px; flex-shrink: 0;
     }
     .footer span { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 500; }
     .footer-brand { display: flex; align-items: center; gap: 5px; }
     .footer-logo { height: 20px; object-fit: contain; }
     .footer-version { font-size: 13px; font-weight: 700; color: #e87722; }
 
-    /* Loading shimmer overlay */
     .loading-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
+      position: fixed; inset: 0; z-index: 50;
       background: rgba(22, 63, 80, 0.92);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 20px;
     }
     .spinner {
-      width: 52px;
-      height: 52px;
+      width: 52px; height: 52px;
       border: 4px solid rgba(255,255,255,0.15);
-      border-top-color: #2FC56D;
-      border-radius: 50%;
+      border-top-color: #2FC56D; border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text {
-      font-size: 15px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.75);
-      letter-spacing: 0.3px;
-    }
+    .loading-text { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.75); letter-spacing: 0.3px; }
   </style>
 </head>
 <body>
@@ -414,13 +307,11 @@
   <div class="arc arc-2"></div>
   <div class="arc arc-3"></div>
 
-  <!-- Loading overlay (shown briefly on entry) -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
     <p class="loading-text">Fetching your data from FAYDA…</p>
   </div>
 
-  <!-- Navbar -->
   <nav class="navbar">
     <img class="nav-logo" src="fayda-logo-hq.png" alt="FAYDA" />
     <div class="nav-lang">
@@ -435,21 +326,16 @@
     </div>
   </nav>
 
-  <!-- Main consent content -->
   <div class="main">
     <div class="consent-wrap">
 
-      <!-- Countdown -->
       <div class="timer-banner">
         <p>Please take appropriate action in</p>
         <div class="timer-value" id="timerDisplay">09:51</div>
       </div>
 
-      <!-- Logo strip -->
       <div class="logo-strip">
-        <div class="logo-pill">
-          <img src="M-Pesa-Logo.png" alt="M-PESA" />
-        </div>
+        <div class="logo-pill"><img src="M-Pesa-Logo.png" alt="M-PESA" /></div>
         <div class="swap-icon">
           <svg viewBox="0 0 28 22" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="18,2 26,11 18,20"></polyline>
@@ -457,17 +343,13 @@
             <polyline points="10,2 2,11 10,20"></polyline>
           </svg>
         </div>
-        <div class="logo-circle">
-          <img src="fayda-logo-hq.png" alt="FAYDA" />
-        </div>
+        <div class="logo-circle"><img src="fayda-logo-hq.png" alt="FAYDA" /></div>
       </div>
 
-      <!-- Request text -->
       <p class="request-text">
         <strong>Fayda-partner-M-PESA</strong> is requesting<br>access to the following:
       </p>
 
-      <!-- Essential Claims -->
       <div class="claims-section">
         <div class="claims-header">
           <h3>Essential Claims</h3>
@@ -479,7 +361,6 @@
           </div>
         </div>
 
-        <!-- Each essential claim -->
         <div class="claim-row" onclick="toggleClaim(this)">
           <div class="claim-left">
             <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
@@ -544,7 +425,6 @@
         <div class="claim-detail">Your portrait photo from your FAYDA identity record.</div>
       </div>
 
-      <!-- Voluntary Claims -->
       <div class="claims-section">
         <div class="claims-header">
           <h3>Voluntary Claims</h3>
@@ -563,7 +443,7 @@
           </div>
           <div class="toggle-wrap">
             <label class="toggle">
-              <input type="checkbox" id="emailToggle" onchange="void(0)" onclick="event.stopPropagation()" />
+              <input type="checkbox" id="emailToggle" onclick="event.stopPropagation()" />
               <span class="toggle-slider"></span>
             </label>
           </div>
@@ -571,16 +451,34 @@
         <div class="claim-detail" style="display:none;"></div>
       </div>
 
+      <div class="consent-error" id="consentError"></div>
+
     </div>
   </div>
 
-  <!-- Fixed action bar -->
   <div class="action-bar">
     <button class="btn-decline" onclick="handleDecline()">Decline</button>
     <button class="btn-accept" onclick="handleAccept()">Accept</button>
   </div>
 
-  <!-- Footer -->
+  <!-- Floating test button -->
+  <div class="floating-test-wrapper">
+    <span class="floating-test-label">Test Validation</span>
+    <button class="floating-test-btn" id="testBtn" onclick="toggleTestMenu(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="overlay" id="overlay" onclick="closeTestMenu()"></div>
+  <div class="floating-test-menu" id="testMenu">
+    <div class="menu-title">Test Validations</div>
+    <button onclick="triggerTest('consentExpired')">Consent Timer Expired</button>
+    <button onclick="triggerTest('consentDeclined')">Consent Declined</button>
+    <button onclick="triggerTest('consentAccepted')">Consent Accepted</button>
+  </div>
+
   <footer class="footer">
     <span>Powered by</span>
     <div class="footer-brand">
@@ -591,7 +489,6 @@
     <span style="font-weight:700; color:rgba(255,255,255,0.55);">2.0</span>
   </footer>
 
-  <!-- Info modal -->
   <div id="infoModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:100; align-items:center; justify-content:center; padding:20px;">
     <div style="background:#fff; border-radius:16px; padding:32px; max-width:380px; width:100%; position:relative;">
       <button onclick="document.getElementById('infoModal').style.display='none'" style="position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer; font-size:22px; color:#666;">&times;</button>
@@ -601,7 +498,8 @@
   </div>
 
   <script>
-    /* ── Loading overlay — hide after 1.8s "fetch" ── */
+    let consentExpired = false;
+
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const ol = document.getElementById('loadingOverlay');
@@ -611,24 +509,29 @@
       }, 1800);
     });
 
-    /* ── Countdown timer (9:51) ── */
     let secs = 9 * 60 + 51;
     const timerEl = document.getElementById('timerDisplay');
-
     const countdown = setInterval(() => {
       secs--;
-      if (secs <= 0) { clearInterval(countdown); timerEl.textContent = '00:00'; return; }
+      if (secs <= 0) {
+        clearInterval(countdown);
+        timerEl.textContent = '00:00';
+        timerEl.classList.add('expired');
+        consentExpired = true;
+        showConsentError('Session expired. Please go back and try again.');
+        return;
+      }
       const m = Math.floor(secs / 60);
       const s = secs % 60;
       timerEl.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
     }, 1000);
 
-    /* ── Claim row expand/collapse ── */
-    function toggleClaim(row) {
-      row.classList.toggle('open');
+    function showConsentError(msg) {
+      document.getElementById('consentError').textContent = msg;
     }
 
-    /* ── Info modals ── */
+    function toggleClaim(row) { row.classList.toggle('open'); }
+
     const claimInfo = {
       essential: {
         title: 'Essential Claims',
@@ -647,7 +550,6 @@
       document.getElementById('infoModal').style.display = 'flex';
     }
 
-    /* ── Actions ── */
     function handleDecline() {
       if (confirm('Are you sure you want to decline? This will cancel the M-PESA verification.')) {
         window.location.href = 'index.html';
@@ -655,10 +557,13 @@
     }
 
     function handleAccept() {
+      if (consentExpired) {
+        showConsentError('Session expired. Please go back and try again.');
+        return;
+      }
       window.location.href = 'confirm-profile.html';
     }
 
-    /* ── Nav lang switcher ── */
     function toggleNavLang(e) {
       e.stopPropagation();
       document.getElementById('navLangBtn').classList.toggle('open');
@@ -675,6 +580,41 @@
       document.getElementById('navLangBtn').classList.remove('open');
       document.getElementById('navLangDd').classList.remove('open');
     });
+
+    function toggleTestMenu(e) {
+      e.stopPropagation();
+      document.getElementById('testMenu').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
+    function closeTestMenu() {
+      document.getElementById('testMenu').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+    }
+    function triggerTest(type) {
+      closeTestMenu();
+      const msgs = {
+        consentExpired: 'Session expired. Please go back and try again.',
+        consentDeclined: 'Consent Declined — You will be redirected to the start page.',
+        consentAccepted: 'Consent Accepted — Redirecting to profile confirmation...'
+      };
+      if (type === 'consentExpired') {
+        consentExpired = true;
+        clearInterval(countdown);
+        timerEl.textContent = '00:00';
+        timerEl.classList.add('expired');
+      }
+      if (type === 'consentDeclined') {
+        showConsentError('Consent Declined — You will be redirected to the start page.');
+        setTimeout(() => window.location.href = 'index.html', 2000);
+        return;
+      }
+      if (type === 'consentAccepted') {
+        showConsentError('');
+        window.location.href = 'confirm-profile.html';
+        return;
+      }
+      showConsentError(msgs[type]);
+    }
   </script>
 
 </body>
