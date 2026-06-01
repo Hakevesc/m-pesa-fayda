@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consent — M-PESA with FAYDA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #1e5f6e;
+    }
+
+    /* ── Background ── */
+    .bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 10% 50%, rgba(255,255,255,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 90% 20%, rgba(255,255,255,0.05) 0%, transparent 50%),
+        linear-gradient(145deg, #1a5568 0%, #2a7a8a 40%, #1e6070 70%, #163f50 100%);
+      z-index: 0;
+    }
+    .bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .arc {
+      position: fixed;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.06);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .arc-1 { width: 700px; height: 700px; bottom: -200px; left: -200px; }
+    .arc-2 { width: 500px; height: 500px; bottom: -100px; left: -100px; }
+    .arc-3 { width: 900px; height: 900px; top: -300px; right: -300px; }
+
+    /* ── Navbar ── */
+    .navbar {
+      position: relative;
+      z-index: 10;
+      background: #fff;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      flex-shrink: 0;
+    }
+    .nav-logo { width: 40px; height: 40px; object-fit: contain; }
+    .nav-lang { position: relative; }
+    .nav-lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e6070;
+      border: none;
+      border-radius: 22px;
+      padding: 8px 18px;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      transition: background 0.2s;
+    }
+    .nav-lang-btn:hover { background: #155060; }
+    .nav-lang-btn svg { width: 12px; height: 12px; fill: #fff; transition: transform 0.2s; }
+    .nav-lang-btn.open svg { transform: rotate(180deg); }
+    .nav-lang-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      overflow: hidden;
+      min-width: 140px;
+      z-index: 20;
+    }
+    .nav-lang-dropdown.open { display: block; }
+    .nav-lang-opt {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 16px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      background: none;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .nav-lang-opt:hover { background: #f4f9fa; }
+    .nav-lang-opt.active { color: #1e6070; }
+    .nav-lang-opt:not(:last-child) { border-bottom: 1px solid #f0f0f0; }
+    .nav-lang-opt .check { color: #1e6070; opacity: 0; }
+    .nav-lang-opt.active .check { opacity: 1; }
+
+    /* ── Main ── */
+    .main {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 36px 20px 120px;
+    }
+
+    .consent-wrap {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ── Timer banner ── */
+    .timer-banner {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .timer-banner p {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.90);
+      margin-bottom: 6px;
+    }
+    .timer-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: #e87722;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Logo strip ── */
+    .logo-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .logo-pill {
+      background: #fff;
+      border-radius: 50px;
+      padding: 10px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .logo-pill img { height: 32px; object-fit: contain; }
+    .logo-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-circle img { width: 52px; height: 52px; object-fit: contain; }
+    .swap-icon { flex-shrink: 0; }
+    .swap-icon svg { width: 28px; height: 22px; stroke: rgba(255,255,255,0.65); }
+
+    /* ── Request text ── */
+    .request-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+    .request-text strong { color: #fff; font-weight: 800; }
+
+    /* ── Claims section ── */
+    .claims-section {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .claims-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 18px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .claims-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .info-icon {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .info-icon svg { width: 10px; height: 10px; stroke: rgba(255,255,255,0.65); }
+
+    /* Claim row */
+    .claim-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .claim-row:last-child { border-bottom: none; }
+    .claim-row:hover { background: rgba(255,255,255,0.06); }
+
+    .claim-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .claim-chevron {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .claim-chevron svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.50); }
+    .claim-row.open .claim-chevron { transform: rotate(90deg); }
+
+    .claim-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.90);
+    }
+
+    .claim-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.3px;
+    }
+
+    /* Toggle switch for voluntary claims */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+    }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.20);
+      border-radius: 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle input:checked + .toggle-slider { background: #2FC56D; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+    /* Claim detail panel */
+    .claim-detail {
+      display: none;
+      padding: 0 18px 14px 44px;
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+    }
+    .claim-row.open + .claim-detail { display: block; }
+
+    /* ── Bottom action bar ── */
+    .action-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      background: linear-gradient(to top, rgba(22,63,80,0.98) 80%, transparent);
+      padding: 20px 24px 28px;
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+    }
+
+    .btn-decline {
+      flex: 1;
+      max-width: 220px;
+      padding: 16px;
+      border-radius: 50px;
+      border: 2px solid rgba(255,255,255,0.30);
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-decline:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.50); }
+
+    .btn-accept {
+      flex: 1;
+      max-width: 220px;
+      padding: 16px;
+      border-radius: 50px;
+      border: none;
+      background: #163f50;
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-accept:hover { background: #1a5060; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+
+    /* ── Footer ── */
+    .footer {
+      position: relative;
+      z-index: 5;
+      background: #163f50;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .footer span { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 500; }
+    .footer-brand { display: flex; align-items: center; gap: 5px; }
+    .footer-logo { height: 20px; object-fit: contain; }
+    .footer-version { font-size: 13px; font-weight: 700; color: #e87722; }
+
+    /* Loading shimmer overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(22, 63, 80, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .spinner {
+      width: 52px;
+      height: 52px;
+      border: 4px solid rgba(255,255,255,0.15);
+      border-top-color: #2FC56D;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.3px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg"></div>
+  <div class="arc arc-1"></div>
+  <div class="arc arc-2"></div>
+  <div class="arc arc-3"></div>
+
+  <!-- Loading overlay (shown briefly on entry) -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p class="loading-text">Fetching your data from FAYDA…</p>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <img class="nav-logo" src="fayda-logo-hq.png" alt="FAYDA" />
+    <div class="nav-lang">
+      <button class="nav-lang-btn" id="navLangBtn" onclick="toggleNavLang(event)">
+        English
+        <svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
+      </button>
+      <div class="nav-lang-dropdown" id="navLangDd">
+        <button class="nav-lang-opt active" onclick="selectNavLang('English')">English <span class="check">✓</span></button>
+        <button class="nav-lang-opt" onclick="selectNavLang('አማርኛ')">አማርኛ <span class="check">✓</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main consent content -->
+  <div class="main">
+    <div class="consent-wrap">
+
+      <!-- Countdown -->
+      <div class="timer-banner">
+        <p>Please take appropriate action in</p>
+        <div class="timer-value" id="timerDisplay">09:51</div>
+      </div>
+
+      <!-- Logo strip -->
+      <div class="logo-strip">
+        <div class="logo-pill">
+          <img src="M-Pesa-Logo.png" alt="M-PESA" />
+        </div>
+        <div class="swap-icon">
+          <svg viewBox="0 0 28 22" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18,2 26,11 18,20"></polyline>
+            <line x1="2" y1="11" x2="26" y2="11"></line>
+            <polyline points="10,2 2,11 10,20"></polyline>
+          </svg>
+        </div>
+        <div class="logo-circle">
+          <img src="fayda-logo-hq.png" alt="FAYDA" />
+        </div>
+      </div>
+
+      <!-- Request text -->
+      <p class="request-text">
+        <strong>Fayda-partner-M-PESA</strong> is requesting<br>access to the following:
+      </p>
+
+      <!-- Essential Claims -->
+      <div class="claims-section">
+        <div class="claims-header">
+          <h3>Essential Claims</h3>
+          <div class="info-icon" onclick="showClaimInfo('essential')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Each essential claim -->
+        <div class="claim-row" onclick="toggleClaim(this)">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Birthdate</span>
+          </div>
+          <span class="claim-badge">Required</span>
+        </div>
+        <div class="claim-detail">Your date of birth as registered in the FAYDA system.</div>
+
+        <div class="claim-row" onclick="toggleClaim(this)">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Address</span>
+          </div>
+          <span class="claim-badge">Required</span>
+        </div>
+        <div class="claim-detail">Your registered residential address.</div>
+
+        <div class="claim-row" onclick="toggleClaim(this)">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Gender</span>
+          </div>
+          <span class="claim-badge">Required</span>
+        </div>
+        <div class="claim-detail">Your gender as recorded in the national identity database.</div>
+
+        <div class="claim-row" onclick="toggleClaim(this)">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Nationality</span>
+          </div>
+          <span class="claim-badge">Required</span>
+        </div>
+        <div class="claim-detail">Your nationality as registered with FAYDA.</div>
+
+        <div class="claim-row" onclick="toggleClaim(this)">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Full Name</span>
+          </div>
+          <span class="claim-badge">Required</span>
+        </div>
+        <div class="claim-detail">Your full legal name as it appears on your FAYDA ID.</div>
+
+        <div class="claim-row" onclick="toggleClaim(this)">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Phone Number</span>
+          </div>
+          <span class="claim-badge">Required</span>
+        </div>
+        <div class="claim-detail">Your registered mobile phone number.</div>
+
+        <div class="claim-row" onclick="toggleClaim(this)">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Picture</span>
+          </div>
+          <span class="claim-badge">Required</span>
+        </div>
+        <div class="claim-detail">Your portrait photo from your FAYDA identity record.</div>
+      </div>
+
+      <!-- Voluntary Claims -->
+      <div class="claims-section">
+        <div class="claims-header">
+          <h3>Voluntary Claims</h3>
+          <div class="info-icon" onclick="showClaimInfo('voluntary')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round">
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </div>
+        </div>
+
+        <div class="claim-row" onclick="void(0)" style="cursor:default;">
+          <div class="claim-left">
+            <div class="claim-chevron"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+            <span class="claim-name">Email Address</span>
+          </div>
+          <div class="toggle-wrap">
+            <label class="toggle">
+              <input type="checkbox" id="emailToggle" onchange="void(0)" onclick="event.stopPropagation()" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+        <div class="claim-detail" style="display:none;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Fixed action bar -->
+  <div class="action-bar">
+    <button class="btn-decline" onclick="handleDecline()">Decline</button>
+    <button class="btn-accept" onclick="handleAccept()">Accept</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span>Powered by</span>
+    <div class="footer-brand">
+      <img class="footer-logo" src="fayda-logo-hq.png" alt="VeriFayda" />
+      <span style="font-size:13px; font-weight:700; color:rgba(255,255,255,0.75);">Veri</span>
+      <span class="footer-version">Fayda</span>
+    </div>
+    <span style="font-weight:700; color:rgba(255,255,255,0.55);">2.0</span>
+  </footer>
+
+  <!-- Info modal -->
+  <div id="infoModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:100; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; border-radius:16px; padding:32px; max-width:380px; width:100%; position:relative;">
+      <button onclick="document.getElementById('infoModal').style.display='none'" style="position:absolute; top:14px; right:14px; background:none; border:none; cursor:pointer; font-size:22px; color:#666;">&times;</button>
+      <h3 id="infoModalTitle" style="font-size:17px; font-weight:700; color:#1e5f6e; margin-bottom:12px;"></h3>
+      <p id="infoModalBody" style="font-size:14px; color:#555; line-height:1.7;"></p>
+    </div>
+  </div>
+
+  <script>
+    /* ── Loading overlay — hide after 1.8s "fetch" ── */
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const ol = document.getElementById('loadingOverlay');
+        ol.style.transition = 'opacity 0.4s';
+        ol.style.opacity = '0';
+        setTimeout(() => ol.style.display = 'none', 400);
+      }, 1800);
+    });
+
+    /* ── Countdown timer (9:51) ── */
+    let secs = 9 * 60 + 51;
+    const timerEl = document.getElementById('timerDisplay');
+
+    const countdown = setInterval(() => {
+      secs--;
+      if (secs <= 0) { clearInterval(countdown); timerEl.textContent = '00:00'; return; }
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      timerEl.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }, 1000);
+
+    /* ── Claim row expand/collapse ── */
+    function toggleClaim(row) {
+      row.classList.toggle('open');
+    }
+
+    /* ── Info modals ── */
+    const claimInfo = {
+      essential: {
+        title: 'Essential Claims',
+        body: 'These are mandatory data fields that M-PESA requires to verify your identity through FAYDA. You cannot proceed without granting access to these claims.'
+      },
+      voluntary: {
+        title: 'Voluntary Claims',
+        body: 'These are optional data fields. You can choose whether to share them with M-PESA. Declining voluntary claims will not block the verification process.'
+      }
+    };
+
+    function showClaimInfo(type) {
+      const info = claimInfo[type];
+      document.getElementById('infoModalTitle').textContent = info.title;
+      document.getElementById('infoModalBody').textContent = info.body;
+      document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    /* ── Actions ── */
+    function handleDecline() {
+      if (confirm('Are you sure you want to decline? This will cancel the M-PESA verification.')) {
+        window.location.href = 'index.html';
+      }
+    }
+
+    function handleAccept() {
+      window.location.href = 'confirm-profile.html';
+    }
+
+    /* ── Nav lang switcher ── */
+    function toggleNavLang(e) {
+      e.stopPropagation();
+      document.getElementById('navLangBtn').classList.toggle('open');
+      document.getElementById('navLangDd').classList.toggle('open');
+    }
+    function selectNavLang(lang) {
+      document.querySelectorAll('.nav-lang-opt').forEach(o => o.classList.remove('active'));
+      [...document.querySelectorAll('.nav-lang-opt')].find(o => o.textContent.trim().startsWith(lang.trim())).classList.add('active');
+      document.getElementById('navLangBtn').childNodes[0].textContent = lang;
+      document.getElementById('navLangBtn').classList.remove('open');
+      document.getElementById('navLangDd').classList.remove('open');
+    }
+    document.addEventListener('click', () => {
+      document.getElementById('navLangBtn').classList.remove('open');
+      document.getElementById('navLangDd').classList.remove('open');
+    });
+  </script>
+
+</body>
+</html>

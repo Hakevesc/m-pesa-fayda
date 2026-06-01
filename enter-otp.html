@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enter OTP — M-PESA with FAYDA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="global.css" />
+  <style>
+    /* ── OTP boxes ── */
+    .otp-boxes {
+      display: flex;
+      gap: 28px;
+      margin-bottom: 12px;
+    }
+
+    .otp-box {
+      width: 72px;
+      height: 80px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-family: 'Barlow', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      text-align: center;
+      outline: none;
+      background: #fff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      caret-color: #2FC56D;
+    }
+
+    .otp-box:focus {
+      border-color: #2FC56D;
+      box-shadow: 0 0 0 4px rgba(47,197,109,0.12);
+    }
+
+    .otp-box.filled {
+      border-color: #239150;
+      background: #f0faf4;
+    }
+
+    /* Resend row */
+    .resend-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 44px;
+      margin-top: 4px;
+    }
+
+    .resend-hint {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .resend-btn {
+      font-family: 'Barlow', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #239150;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .resend-btn:disabled {
+      color: #aaa;
+      text-decoration: none;
+      cursor: default;
+    }
+
+    .timer {
+      font-size: 13px;
+      font-weight: 700;
+      color: #239150;
+      min-width: 36px;
+    }
+
+    /* Phone number highlight in instruction */
+    .phone-highlight {
+      color: #239150;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT GREEN PANEL -->
+  <div class="left-panel">
+    <div class="left-content">
+      <h1 class="left-title">Verify Your M-PESA<br>Account with FAYDA</h1>
+
+      <div class="logo-strip">
+        <div class="logo-bubble"><img src="fayda-logo-hq.png" alt="FAYDA" /></div>
+        <div class="connector">
+          <div class="c-dot"></div>
+          <div class="c-dash"></div>
+          <div class="arrow-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#239150" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"></polyline>
+              <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+              <polyline points="7 23 3 19 7 15"></polyline>
+              <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            </svg>
+          </div>
+          <div class="c-dash"></div>
+          <div class="c-dot"></div>
+        </div>
+        <div class="logo-bubble"><img src="M-Pesa-Logo.png" alt="M-PESA" /></div>
+      </div>
+
+      <div class="left-tagline">
+        <p>የፋይዳ መለያ ቁጥርን እኩዎንትዮ ጋር ያስተሳስሩ</p>
+        <p>Link your FAYDA ID with your account</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT WHITE PANEL -->
+  <div class="right-panel">
+    <div class="top-bar">
+      <div class="lang-switcher">
+        <button class="lang-btn" id="langBtn" onclick="toggleLang(event)">
+          <span id="langBtnText">EN</span>
+          <svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-option active" data-lang="en" onclick="selectLang('en')">
+            <span>English</span><span class="check">✓</span>
+          </button>
+          <button class="lang-option" data-lang="am" onclick="selectLang('am')">
+            <span>አማርኛ</span><span class="check">✓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-area">
+      <!-- Steps: 1 done, 2 active, 3-5 inactive -->
+      <div class="steps">
+        <div class="step done">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step active">2</div>
+        <div class="step-line"></div>
+        <div class="step inactive">3</div>
+        <div class="step-line"></div>
+        <div class="step inactive">4</div>
+        <div class="step-line"></div>
+        <div class="step inactive">5</div>
+      </div>
+
+      <p class="instruction">
+        Please enter the 4-digit verification<br>
+        code sent via SMS to <span class="phone-highlight" id="phoneDisplay">+251709 339 499</span>.
+      </p>
+
+      <div class="input-label">Verification Code</div>
+
+      <div class="otp-boxes" id="otpBoxes">
+        <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+        <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+        <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+        <input class="otp-box" type="text" inputmode="numeric" maxlength="1" />
+      </div>
+
+      <div class="resend-row">
+        <span class="resend-hint">Didn't receive the code?</span>
+        <button class="resend-btn" id="resendBtn" disabled onclick="resendOtp()">Resend</button>
+        <span class="timer" id="timer">0:30</span>
+      </div>
+
+      <button class="action-btn" id="verifyBtn" disabled onclick="verify()">
+        <span>Verify</span>
+        <div class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* ── Phone display ── */
+    const phone = sessionStorage.getItem('mpesa_phone') || '+251709 339 499';
+    document.getElementById('phoneDisplay').textContent = phone;
+
+    /* ── OTP box logic ── */
+    const boxes = Array.from(document.querySelectorAll('.otp-box'));
+
+    boxes.forEach((box, i) => {
+      box.addEventListener('input', e => {
+        const val = e.target.value.replace(/\D/g, '');
+        e.target.value = val.slice(0, 1);
+        e.target.classList.toggle('filled', val.length > 0);
+        if (val && i < boxes.length - 1) boxes[i + 1].focus();
+        checkComplete();
+      });
+
+      box.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !box.value && i > 0) {
+          boxes[i - 1].focus();
+          boxes[i - 1].value = '';
+          boxes[i - 1].classList.remove('filled');
+          checkComplete();
+        }
+      });
+
+      box.addEventListener('paste', e => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+        pasted.split('').forEach((ch, j) => {
+          if (boxes[i + j]) {
+            boxes[i + j].value = ch;
+            boxes[i + j].classList.add('filled');
+          }
+        });
+        const nextEmpty = boxes.find(b => !b.value);
+        if (nextEmpty) nextEmpty.focus(); else boxes[boxes.length - 1].focus();
+        checkComplete();
+      });
+    });
+
+    function checkComplete() {
+      const full = boxes.every(b => b.value.length === 1);
+      const btn = document.getElementById('verifyBtn');
+      btn.classList.toggle('active', full);
+      btn.disabled = !full;
+    }
+
+    function verify() {
+      const code = boxes.map(b => b.value).join('');
+      if (code.length === boxes.length) window.location.href = 'fan-login.html';
+    }
+
+    /* ── Countdown timer ── */
+    let seconds = 30;
+    const timerEl  = document.getElementById('timer');
+    const resendEl = document.getElementById('resendBtn');
+
+    const countdown = setInterval(() => {
+      seconds--;
+      timerEl.textContent = '0:' + String(seconds).padStart(2, '0');
+      if (seconds <= 0) {
+        clearInterval(countdown);
+        timerEl.textContent = '';
+        resendEl.disabled = false;
+      }
+    }, 1000);
+
+    function resendOtp() {
+      resendEl.disabled = true;
+      seconds = 30;
+      timerEl.textContent = '0:30';
+      const cd = setInterval(() => {
+        seconds--;
+        timerEl.textContent = '0:' + String(seconds).padStart(2, '0');
+        if (seconds <= 0) {
+          clearInterval(cd);
+          timerEl.textContent = '';
+          resendEl.disabled = false;
+        }
+      }, 1000);
+      boxes.forEach(b => { b.value = ''; b.classList.remove('filled'); });
+      boxes[0].focus();
+      checkComplete();
+    }
+
+    /* ── Lang switcher ── */
+    function toggleLang(e) {
+      e.stopPropagation();
+      document.getElementById('langBtn').classList.toggle('open');
+      document.getElementById('langDropdown').classList.toggle('open');
+    }
+
+    function selectLang(lang) {
+      document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+      document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+      document.getElementById('langBtnText').textContent = lang === 'en' ? 'EN' : 'AM';
+      document.getElementById('langBtn').classList.remove('open');
+      document.getElementById('langDropdown').classList.remove('open');
+    }
+
+    document.addEventListener('click', () => {
+      document.getElementById('langBtn').classList.remove('open');
+      document.getElementById('langDropdown').classList.remove('open');
+    });
+
+    /* Focus first box on load */
+    boxes[0].focus();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirm Your Profile — M-PESA with FAYDA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="global.css" />
+  <style>
+    /* ── Profile header ── */
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+    }
+
+    .avatar-img {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #2FC56D;
+    }
+
+    /* Placeholder avatar */
+    .avatar-placeholder {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d0ead8 0%, #b6dfc2 100%);
+      border: 3px solid #2FC56D;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .avatar-placeholder svg {
+      width: 56px;
+      height: 56px;
+      stroke: #239150;
+    }
+
+    .profile-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a1a1a;
+      text-align: center;
+    }
+
+    .profile-phone-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-phone-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+    }
+
+    .profile-phone-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    /* ── Profile fields ── */
+    .fields-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 44px;
+      border: 1px solid #f0f0f0;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .field-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      background: #fff;
+    }
+
+    .field-row:last-child { border-bottom: none; }
+
+    .field-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .field-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    /* Page title row */
+    .page-title-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 36px;
+      gap: 12px;
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f4f4f4;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .close-btn:hover { background: #eaeaea; }
+    .close-btn svg { width: 16px; height: 16px; stroke: #555; }
+
+    .page-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Steps at top showing current */
+    .form-area { overflow-y: auto; }
+
+    /* Loading shimmer on fields */
+    @keyframes shimmer {
+      0%   { background-position: -600px 0; }
+      100% { background-position: 600px 0; }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 600px 100%;
+      animation: shimmer 1.2s infinite;
+      border-radius: 6px;
+    }
+    .field-value.shimmer { height: 20px; width: 70%; }
+
+    .loading-fields .field-value { display: none; }
+    .loading-fields .field-value-shimmer { display: block; }
+    .field-value-shimmer { display: none; height: 20px; width: 65%; border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT GREEN PANEL -->
+  <div class="left-panel">
+    <div class="left-content">
+      <h1 class="left-title">Verify Your M-PESA<br>Account with FAYDA</h1>
+
+      <div class="logo-strip">
+        <div class="logo-bubble"><img src="fayda-logo-hq.png" alt="FAYDA" /></div>
+        <div class="connector">
+          <div class="c-dot"></div>
+          <div class="c-dash"></div>
+          <div class="arrow-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#239150" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"></polyline>
+              <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+              <polyline points="7 23 3 19 7 15"></polyline>
+              <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            </svg>
+          </div>
+          <div class="c-dash"></div>
+          <div class="c-dot"></div>
+        </div>
+        <div class="logo-bubble"><img src="M-Pesa-Logo.png" alt="M-PESA" /></div>
+      </div>
+
+      <div class="left-tagline">
+        <p>የፋይዳ መለያ ቁጥርን እኩዎንትዮ ጋር ያስተሳስሩ</p>
+        <p>Link your FAYDA ID with your account</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT WHITE PANEL -->
+  <div class="right-panel">
+    <div class="top-bar">
+      <div class="lang-switcher">
+        <button class="lang-btn" id="langBtn" onclick="toggleLang(event)">
+          <span id="langBtnText">EN</span>
+          <svg viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z"/></svg>
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-option active" data-lang="en" onclick="selectLang('en')">
+            <span>English</span><span class="check">✓</span>
+          </button>
+          <button class="lang-option" data-lang="am" onclick="selectLang('am')">
+            <span>አማርኛ</span><span class="check">✓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-area">
+
+      <!-- Step indicators: 1-4 done, 5 active -->
+      <div class="steps">
+        <div class="step done">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step done">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step done">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step done">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><polyline points="2,8 6,12 14,4" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="step-line done"></div>
+        <div class="step active">5</div>
+      </div>
+
+      <!-- Page title -->
+      <div class="page-title-row">
+        <button class="close-btn" onclick="history.back()">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <span class="page-title">Confirm Your Profile</span>
+      </div>
+
+      <!-- Profile header -->
+      <div class="profile-header">
+        <div class="avatar-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div class="profile-name" id="profileName">Zemedkun Kidane</div>
+        <div class="profile-phone-row">
+          <span class="profile-phone-label">Phone Number</span>
+          <span class="profile-phone-val" id="profilePhone">079 123 1222</span>
+        </div>
+      </div>
+
+      <!-- Profile fields -->
+      <div class="fields-list" id="fieldsList">
+        <div class="field-row">
+          <span class="field-label">Full Name</span>
+          <span class="field-value">Mikias Dereje</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Phone Number</span>
+          <span class="field-value">0911032052</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Address</span>
+          <span class="field-value">Avenue 2001, n23 Ethiopia</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Birthdate</span>
+          <span class="field-value">12/27/2027</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Nationality</span>
+          <span class="field-value">Ethiopian</span>
+        </div>
+        <div class="field-row">
+          <span class="field-label">Gender</span>
+          <span class="field-value">Male</span>
+        </div>
+      </div>
+
+      <!-- Confirm button -->
+      <button class="action-btn active" onclick="confirm()">
+        <span>Confirm</span>
+        <div class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    function confirm() {
+      window.location.href = 'success.html';
+    }
+
+    function toggleLang(e) {
+      e.stopPropagation();
+      document.getElementById('langBtn').classList.toggle('open');
+      document.getElementById('langDropdown').classList.toggle('open');
+    }
+    function selectLang(lang) {
+      document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+      document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+      document.getElementById('langBtnText').textContent = lang === 'en' ? 'EN' : 'AM';
+      document.getElementById('langBtn').classList.remove('open');
+      document.getElementById('langDropdown').classList.remove('open');
+    }
+    document.addEventListener('click', () => {
+      document.getElementById('langBtn').classList.remove('open');
+      document.getElementById('langDropdown').classList.remove('open');
+    });
+  </script>
+
+</body>
+</html>
